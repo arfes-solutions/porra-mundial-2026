@@ -3102,6 +3102,16 @@ def debug_fetchall():
     return {"http_status": r.status_code, "finished": finished}
 
 
+@public_bp.route("/debug/standings")
+def debug_standings():
+    from flask import current_app
+    import requests as _r
+    api_key = current_app.config.get("FOOTBALL_DATA_API_KEY", "")
+    r = _r.get("https://api.football-data.org/v4/competitions/WC/standings",
+               headers={"X-Auth-Token": api_key}, timeout=15)
+    return {"status": r.status_code, "body": r.json()}
+
+
 @public_bp.route("/debug/stored")
 def debug_stored():
     """Show what's actually stored in Supabase for finished matches."""
