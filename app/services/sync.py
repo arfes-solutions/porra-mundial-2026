@@ -151,6 +151,11 @@ def fetch_all(api_key: str) -> dict:
 
         advanced = {"octavos": set(), "cuartos": set(), "semis": set(), "final": set()}
         champion = runner_up = None
+        # Track completion per group and per knockout round
+        group_total    = {}   # letter -> total match count
+        group_finished = {}   # letter -> finished match count
+        round_total    = {}   # round_key -> total
+        round_finished = {}   # round_key -> finished
 
         for m in matches:
             stage      = m.get("stage", "")
@@ -187,6 +192,14 @@ def fetch_all(api_key: str) -> dict:
 
             is_finished = status in _STATUS_FINISHED
             is_live     = status in _STATUS_LIVE
+
+            # Track completion counters
+            if stage == "GROUP_STAGE" and group_letter:
+                group_total[group_letter]    = group_total.get(group_letter, 0) + 1
+                group_finished[group_letter] = group_finished.get(group_letter, 0) + (1 if is_finished else 0)
+            elif round_key and stage != "FINAL":
+                round_total[round_key]    = round_total.get(round_key, 0) + 1
+                round_finished[round_key] = round_finished.get(round_key, 0) + (1 if is_finished else 0)
 
             # Build fixture entry
             fixture = {
@@ -226,6 +239,17 @@ def fetch_all(api_key: str) -> dict:
             results["campeon"] = champion
         if runner_up:
             results["subcampeon"] = runner_up
+
+        # Store completion flags
+        for letter, total in group_total.items():
+            if total > 0 and group_finished.get(letter, 0) >= total:
+                results[f"g_{letter.lower()}_complete"] = True
+        for ronda, total in round_total.items():
+            if total > 0 and round_finished.get(ronda, 0) >= total:
+                results[f"{ronda}_complete"] = True
+        # Final is its own round
+        if champion:
+            results["final_complete"] = True
 
     except Exception as exc:
         raise RuntimeError(f"Error fetching matches: {exc}")
