@@ -282,40 +282,40 @@ HTML_TEMPLATE = """
             border-radius: 10px !important;
         }
 
-        /* ── INICIO / RANKING ── azul marino + dorado */
+        /* ── INICIO / RANKING ── verde oscuro con toque dorado */
         body.page-inicio .page-bg {
-            background: linear-gradient(135deg, #0a1628 0%, #1a2d4a 40%, #0d2040 70%, #08111e 100%);
+            background: linear-gradient(160deg, #061a0c 0%, #0c3018 40%, #0a2414 70%, #061a0c 100%);
         }
 
-        /* ── FASE GRUPOS ── verde esmeralda intenso */
+        /* ── FASE GRUPOS ── verde campo de fútbol */
         body.page-fase_grupos .page-bg {
-            background: linear-gradient(160deg, #0a2e12 0%, #0f4520 40%, #1a6030 60%, #0a2e12 100%);
+            background: linear-gradient(160deg, #082010 0%, #0f3a1a 40%, #123e1c 60%, #082010 100%);
         }
 
-        /* ── ELIMINATORIAS ── púrpura a dorado ámbar */
+        /* ── ELIMINATORIAS ── verde oscuro con brillo dorado */
         body.page-eliminatorias .page-bg {
-            background: linear-gradient(135deg, #1a0a2e 0%, #2d1245 40%, #3a1a10 70%, #1a0800 100%);
+            background: linear-gradient(135deg, #051208 0%, #0a2410 40%, #0f2e14 70%, #051208 100%);
         }
 
-        /* ── PREDICCION COMPLETA ── verde brillante festivo */
+        /* ── PREDICCION COMPLETA ── verde festivo */
         body.page-prediccion_completa .page-bg {
-            background: linear-gradient(135deg, #0a1f0a 0%, #1a4020 40%, #0f2d10 70%, #0a1808 100%);
+            background: linear-gradient(135deg, #072010 0%, #0e381a 40%, #0c2e16 70%, #072010 100%);
         }
 
-        /* ── VER GRUPOS ── azul noche estadio */
+        /* ── VER GRUPOS ── verde noche estadio */
         body.page-ver_grupos .page-bg {
-            background: linear-gradient(160deg, #050e28 0%, #0a1a40 40%, #102255 60%, #050e28 100%);
+            background: linear-gradient(160deg, #061608 0%, #0c2c12 40%, #102e16 60%, #061608 100%);
         }
 
-        /* ── VER HORARIOS ── verde azulado neón */
+        /* ── VER HORARIOS ── verde profundo */
         body.page-ver_horarios .page-bg,
         body.page-ver_horarios_dinamico .page-bg {
-            background: linear-gradient(135deg, #020d14 0%, #041e28 45%, #062030 70%, #020d14 100%);
+            background: linear-gradient(135deg, #051008 0%, #0a2210 45%, #0d2a14 70%, #051008 100%);
         }
 
-        /* ── VER PREDICCION ── índigo / violeta rico */
+        /* ── VER PREDICCION ── verde oscuro rico */
         body.page-ver_prediccion .page-bg {
-            background: linear-gradient(135deg, #0e0820 0%, #1a1035 45%, #221545 70%, #0e0820 100%);
+            background: linear-gradient(135deg, #061a0c 0%, #0c3218 45%, #103620 70%, #061a0c 100%);
         }
 
         /* ── NUEVO NOMBRE ── verde vibrante */
@@ -323,9 +323,9 @@ HTML_TEMPLATE = """
             background: linear-gradient(160deg, #082010 0%, #0f3820 50%, #0a2814 100%);
         }
 
-        /* ── VER ELIMINATORIAS ── cosmos azul profundo */
+        /* ── VER ELIMINATORIAS ── verde noche profundo */
         body.page-ver_eliminatorias .page-bg {
-            background: linear-gradient(135deg, #08051e 0%, #100a30 45%, #180f40 70%, #08051e 100%);
+            background: linear-gradient(135deg, #041008 0%, #0a2010 45%, #0e2814 70%, #041008 100%);
         }
     </style>
 </head>
@@ -1526,96 +1526,123 @@ HTML_TEMPLATE = """
         resize();
         window.addEventListener('resize', resize);
 
-        // ── INICIO: estrellas doradas + nebulosa azul ──
+        // helper: dibuja un balón de fútbol (círculo + pentágonos simplificados)
+        function drawBall(ctx, cx, cy, r, alpha) {
+            ctx.globalAlpha = alpha;
+            ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
+            ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineWidth = r*.12; ctx.stroke();
+            ctx.fillStyle = 'rgba(255,255,255,0.07)'; ctx.fill();
+            // manchas hexagonales simplificadas
+            const spots = [[0,-1],[.87,.5],[-.87,.5],[0,.85],[.75,-.5],[-.75,-.5]];
+            spots.forEach(([sx,sy]) => {
+                ctx.beginPath();
+                ctx.arc(cx+sx*r*.55, cy+sy*r*.55, r*.22, 0, Math.PI*2);
+                ctx.fillStyle='rgba(0,0,0,0.25)'; ctx.fill();
+            });
+            ctx.globalAlpha = 1;
+        }
+
+        // ── INICIO: balones flotando + campo al fondo ──
         if (page === 'inicio') {
-            const P = Array.from({length:100}, () => ({
+            const balls=Array.from({length:8},()=>({
                 x:Math.random(), y:Math.random(),
-                r:Math.random()*3+0.8,
-                vx:(Math.random()-.5)*.25, vy:-(Math.random()*.4+.08),
-                alpha:Math.random()*.7+.25,
-                color:Math.random()>.4?'#f0c040':Math.random()>.5?'#fff':'#a0d8ff',
-                phase:Math.random()*Math.PI*2,
+                r:Math.random()*28+12,
+                vx:(Math.random()-.5)*.0004, vy:(Math.random()-.5)*.0003,
+                rot:Math.random()*Math.PI*2, rotV:(Math.random()-.5)*.012,
+                alpha:Math.random()*.18+.06,
             }));
-            // nebulosa de fondo
-            const grad=ctx.createRadialGradient(canvas.width*.3,canvas.height*.4,0,canvas.width*.3,canvas.height*.4,canvas.width*.6);
-            grad.addColorStop(0,'rgba(30,80,160,0.18)');
-            grad.addColorStop(1,'rgba(0,0,0,0)');
             let t=0;
             (function tick(){
                 ctx.clearRect(0,0,canvas.width,canvas.height);
-                ctx.fillStyle=grad; ctx.fillRect(0,0,canvas.width,canvas.height);
-                P.forEach(p => {
-                    p.x+=p.vx/canvas.width; p.y+=p.vy/canvas.height;
-                    if(p.y<-.01){p.y=1.01;p.x=Math.random();}
-                    if(p.x<0)p.x=1; if(p.x>1)p.x=0;
-                    const a=p.alpha*(0.55+0.45*Math.sin(p.phase+t*.018));
-                    ctx.beginPath(); ctx.arc(p.x*canvas.width,p.y*canvas.height,p.r,0,Math.PI*2);
-                    ctx.fillStyle=p.color; ctx.globalAlpha=a; ctx.fill();
+                const W=canvas.width,H=canvas.height;
+                // línea de medio campo sutil
+                ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=2;
+                ctx.beginPath(); ctx.moveTo(0,H/2); ctx.lineTo(W,H/2); ctx.stroke();
+                ctx.beginPath(); ctx.arc(W/2,H/2,Math.min(W,H)*.12,0,Math.PI*2); ctx.stroke();
+                balls.forEach(b=>{
+                    b.x+=b.vx; b.y+=b.vy; b.rot+=b.rotV;
+                    if(b.x<-.05)b.x=1.05; if(b.x>1.05)b.x=-.05;
+                    if(b.y<-.05)b.y=1.05; if(b.y>1.05)b.y=-.05;
+                    ctx.save(); ctx.translate(b.x*W,b.y*H); ctx.rotate(b.rot);
+                    drawBall(ctx,0,0,b.r,b.alpha);
+                    ctx.restore();
                 });
-                ctx.globalAlpha=1; t++; requestAnimationFrame(tick);
+                t++; requestAnimationFrame(tick);
             })();
         }
 
-        // ── FASE_GRUPOS: campo de fútbol con líneas brillantes ──
+        // ── FASE_GRUPOS: campo de fútbol completo pulsante ──
         else if (page === 'fase_grupos') {
             let t=0;
             (function tick(){
                 ctx.clearRect(0,0,canvas.width,canvas.height);
                 const W=canvas.width,H=canvas.height;
-                const a=0.14+0.07*Math.sin(t*.006);
+                const a=0.12+0.06*Math.sin(t*.006);
                 ctx.strokeStyle=`rgba(255,255,255,${a})`; ctx.lineWidth=2;
-                ctx.beginPath(); ctx.moveTo(W/2,0); ctx.lineTo(W/2,H); ctx.stroke();
-                ctx.beginPath(); ctx.arc(W/2,H/2,Math.min(W,H)*.14,0,Math.PI*2); ctx.stroke();
-                ctx.strokeRect(W*.06,H*.07,W*.88,H*.86);
-                ctx.strokeRect(W*.06,H*.28,W*.17,H*.44);
-                ctx.strokeRect(W*.77,H*.28,W*.17,H*.44);
-                ctx.strokeRect(W*.06,H*.37,W*.07,H*.26);
-                ctx.strokeRect(W*.87,H*.37,W*.07,H*.26);
-                ctx.beginPath(); ctx.arc(W/2,H/2,5,0,Math.PI*2);
-                ctx.fillStyle=`rgba(255,255,255,${a*2.5})`; ctx.fill();
-                // rayas del campo (césped)
-                ctx.lineWidth=1;
-                for(let i=0;i<8;i++){
-                    const x=W*.06+i*(W*.88/8);
-                    ctx.strokeStyle=`rgba(255,255,255,${0.04+0.02*Math.sin(t*.004+i)})`;
-                    ctx.beginPath(); ctx.moveTo(x,H*.07); ctx.lineTo(x,H*.93); ctx.stroke();
+                // rayas de césped
+                for(let i=0;i<10;i++){
+                    const stripe=W*.88/10;
+                    ctx.fillStyle=`rgba(255,255,255,${i%2===0?0.02:0.035})`;
+                    ctx.fillRect(W*.06+i*stripe, H*.07, stripe, H*.86);
                 }
+                ctx.beginPath(); ctx.moveTo(W/2,H*.07); ctx.lineTo(W/2,H*.93); ctx.stroke();
+                ctx.beginPath(); ctx.arc(W/2,H/2,Math.min(W,H)*.13,0,Math.PI*2); ctx.stroke();
+                ctx.strokeRect(W*.06,H*.07,W*.88,H*.86);
+                ctx.strokeRect(W*.06,H*.28,W*.18,H*.44);
+                ctx.strokeRect(W*.76,H*.28,W*.18,H*.44);
+                ctx.strokeRect(W*.06,H*.38,W*.07,H*.24);
+                ctx.strokeRect(W*.87,H*.38,W*.07,H*.24);
+                // punto central
+                ctx.beginPath(); ctx.arc(W/2,H/2,5,0,Math.PI*2);
+                ctx.fillStyle=`rgba(255,255,255,${a*3})`; ctx.fill();
+                // arcos de corner
+                [[W*.06,H*.07],[W*.94,H*.07],[W*.06,H*.93],[W*.94,H*.93]].forEach(([cx,cy],i)=>{
+                    const angle=i*Math.PI/2+Math.PI/4;
+                    ctx.beginPath(); ctx.arc(cx,cy,W*.04,angle-Math.PI/4,angle+Math.PI/4);
+                    ctx.stroke();
+                });
                 t++; requestAnimationFrame(tick);
             })();
         }
 
-        // ── ELIMINATORIAS: rayos ámbar + destellos púrpura ──
+        // ── ELIMINATORIAS: trofeo de rayos dorados desde abajo ──
         else if (page === 'eliminatorias') {
             let t=0;
             (function tick(){
                 ctx.clearRect(0,0,canvas.width,canvas.height);
-                const W=canvas.width,H=canvas.height,cx=W/2,cy=H*1.05;
-                for(let i=0;i<16;i++){
-                    const angle=(i/16)*Math.PI-Math.PI/2+t*.0008;
-                    const a=(0.08+0.05*Math.sin(t*.02+i))*(i%2===0?1.5:.8);
-                    const spread=Math.PI/16*.7;
-                    const color=i%3===0?`rgba(200,100,255,${a})`:`rgba(240,160,20,${a})`;
-                    const gx=cx+Math.cos(angle)*H*1.6,gy=cy+Math.sin(angle)*H*1.6;
+                const W=canvas.width,H=canvas.height,cx=W/2,cy=H*1.1;
+                for(let i=0;i<18;i++){
+                    const angle=(i/18)*Math.PI-Math.PI/2+t*.0006;
+                    const a=(0.07+0.04*Math.sin(t*.02+i))*(i%2===0?1.6:.7);
+                    const spread=Math.PI/18*.65;
+                    const gold=i%3!==0;
+                    const gx=cx+Math.cos(angle)*H*1.8,gy=cy+Math.sin(angle)*H*1.8;
                     const grad=ctx.createLinearGradient(cx,cy,gx,gy);
-                    grad.addColorStop(0,color.replace(`,${a})`,`,${a*2.5})`));
-                    grad.addColorStop(1,'rgba(240,160,20,0)');
+                    grad.addColorStop(0,gold?`rgba(240,190,30,${a*2.5})`:`rgba(255,255,255,${a*1.5})`);
+                    grad.addColorStop(1,'rgba(240,190,30,0)');
                     ctx.beginPath(); ctx.moveTo(cx,cy);
                     ctx.arc(cx,cy,H*2,angle-spread,angle+spread);
                     ctx.closePath(); ctx.fillStyle=grad; ctx.fill();
                 }
+                // balón en el centro con brillo
+                const pulse=1+0.08*Math.sin(t*.04);
+                ctx.save(); ctx.translate(cx,H*.35);
+                drawBall(ctx,0,0,22*pulse,0.35+0.1*Math.sin(t*.04));
+                ctx.restore();
                 t++; requestAnimationFrame(tick);
             })();
         }
 
-        // ── PREDICCION_COMPLETA: confeti vibrante ──
+        // ── PREDICCION_COMPLETA: confeti en colores de selecciones (verde/dorado/blanco) ──
         else if (page === 'prediccion_completa') {
-            const pieces=Array.from({length:120},()=>({
+            const COLORS=['#f0c020','#ffffff','#2ecc71','#27ae60','#f39c12','#ecf0f1'];
+            const pieces=Array.from({length:110},()=>({
                 x:Math.random(), y:Math.random(),
-                vx:(Math.random()-.5)*.005, vy:Math.random()*.007+.002,
-                size:Math.random()*10+4, angle:Math.random()*Math.PI*2,
-                spin:(Math.random()-.5)*.08,
-                color:`hsl(${Math.floor(Math.random()*360)},90%,65%)`,
-                alpha:Math.random()*.55+.3,
+                vx:(Math.random()-.5)*.004, vy:Math.random()*.006+.002,
+                size:Math.random()*9+4, angle:Math.random()*Math.PI*2,
+                spin:(Math.random()-.5)*.07,
+                color:COLORS[Math.floor(Math.random()*COLORS.length)],
+                alpha:Math.random()*.5+.3,
             }));
             (function tick(){
                 ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -1632,123 +1659,154 @@ HTML_TEMPLATE = """
             })();
         }
 
-        // ── VER_GRUPOS: público del estadio vibrante ──
+        // ── VER_GRUPOS: ola del estadio (crowd wave) ──
         else if (page === 'ver_grupos') {
-            const dots=Array.from({length:300},()=>({
-                x:Math.random(), y:Math.random()*.75+.1,
-                r:Math.random()*2.5+1,
-                hue:Math.floor(Math.random()*360),
-                alpha:Math.random()*.22+.08,
-                phase:Math.random()*Math.PI*2,
-            }));
+            // puntos de aficionados organizados en filas que hacen la ola
+            const ROWS=12, COLS=30;
+            const crowd=[];
+            for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++)
+                crowd.push({r,c,phase:c*(Math.PI*2/COLS)+r*.3});
             let t=0;
             (function tick(){
                 ctx.clearRect(0,0,canvas.width,canvas.height);
                 const W=canvas.width,H=canvas.height;
-                dots.forEach(d=>{
-                    const a=d.alpha*(0.4+0.6*Math.sin(d.phase+t*.016));
-                    ctx.beginPath(); ctx.arc(d.x*W,d.y*H,d.r,0,Math.PI*2);
-                    ctx.fillStyle=`hsla(${d.hue},85%,70%,${a})`; ctx.fill();
+                const cellW=W/COLS, cellH=(H*.6)/ROWS;
+                crowd.forEach(p=>{
+                    const wave=Math.sin(p.phase+t*.06);
+                    const y=H*.15+p.r*cellH - wave*cellH*.35;
+                    const a=0.12+0.1*(wave+1)/2;
+                    const hue=p.r%2===0?120:100;
+                    ctx.beginPath(); ctx.arc((p.c+.5)*cellW, y, cellW*.3, 0, Math.PI*2);
+                    ctx.fillStyle=`hsla(${hue},60%,55%,${a})`; ctx.fill();
                 });
                 t++; requestAnimationFrame(tick);
             })();
         }
 
-        // ── VER_HORARIOS: cuadrícula LED cyan + scanline ──
+        // ── VER_HORARIOS: marcador de estadio con dígitos parpadeantes ──
         else if (page === 'ver_horarios' || page === 'ver_horarios_dinamico') {
             let t=0;
             (function tick(){
                 ctx.clearRect(0,0,canvas.width,canvas.height);
-                const W=canvas.width,H=canvas.height,sp=30;
-                ctx.strokeStyle='rgba(0,220,255,0.08)'; ctx.lineWidth=1;
+                const W=canvas.width,H=canvas.height;
+                // cuadrícula verde tipo marcador
+                ctx.strokeStyle='rgba(100,220,100,0.06)'; ctx.lineWidth=1;
+                const sp=28;
                 for(let x=0;x<W;x+=sp){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
                 for(let y=0;y<H;y+=sp){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-                const sy=(t*1.8)%H;
-                const g=ctx.createLinearGradient(0,sy-60,0,sy+60);
-                g.addColorStop(0,'rgba(0,220,255,0)');
-                g.addColorStop(.5,'rgba(0,220,255,0.12)');
-                g.addColorStop(1,'rgba(0,220,255,0)');
-                ctx.fillStyle=g; ctx.fillRect(0,sy-60,W,120);
-                // puntos LED en intersecciones
-                if(t%3===0){
-                    for(let x=0;x<W;x+=sp*3){
-                        for(let y=0;y<H;y+=sp*3){
-                            const a=0.05+0.05*Math.sin(t*.04+x*.01+y*.01);
-                            ctx.beginPath(); ctx.arc(x,y,2,0,Math.PI*2);
-                            ctx.fillStyle=`rgba(0,255,200,${a})`; ctx.fill();
-                        }
+                // línea scanline de marcador
+                const sy=(t*1.5)%H;
+                const g=ctx.createLinearGradient(0,sy-50,0,sy+50);
+                g.addColorStop(0,'rgba(80,220,80,0)');
+                g.addColorStop(.5,'rgba(80,220,80,0.1)');
+                g.addColorStop(1,'rgba(80,220,80,0)');
+                ctx.fillStyle=g; ctx.fillRect(0,sy-50,W,100);
+                // pequeños balones que caen como lluvia
+                if(t%90===0 || !tick._balls){
+                    tick._balls=tick._balls||[];
+                    if(tick._balls.length<12) tick._balls.push({x:Math.random(),y:0,vy:Math.random()*.003+.001,r:Math.random()*6+4,alpha:Math.random()*.2+.1});
+                }
+                tick._balls=(tick._balls||[]).filter(b=>{
+                    b.y+=b.vy;
+                    drawBall(ctx,b.x*W,b.y*H,b.r,b.alpha);
+                    return b.y<1.05;
+                });
+                t++; requestAnimationFrame(tick);
+            })();
+        }
+
+        // ── VER_PREDICCION: trayectorias de balón (arcos parabólicos) ──
+        else if (page === 'ver_prediccion') {
+            const arcs=Array.from({length:6},()=>({
+                x0:Math.random(), x1:Math.random(),
+                y0:.8+Math.random()*.15, y1:.75+Math.random()*.2,
+                peak:.1+Math.random()*.35,
+                prog:Math.random(), speed:Math.random()*.004+.002,
+                alpha:Math.random()*.15+.06,
+                r:Math.random()*7+5,
+            }));
+            let t=0;
+            (function tick(){
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                const W=canvas.width,H=canvas.height;
+                arcs.forEach(a=>{
+                    a.prog+=a.speed; if(a.prog>1){a.prog=0;a.x0=Math.random();a.x1=Math.random();}
+                    const p=a.prog;
+                    // traza el arco pasado
+                    ctx.beginPath();
+                    ctx.strokeStyle=`rgba(255,255,255,${a.alpha*.6})`; ctx.lineWidth=1.5;
+                    for(let i=0;i<p;i+=0.02){
+                        const bx=(1-i)*a.x0+i*a.x1;
+                        const by=(1-i)*i*(-2*a.peak)+((1-i)*a.y0+i*a.y1);
+                        i===0?ctx.moveTo(bx*W,by*H):ctx.lineTo(bx*W,by*H);
+                    }
+                    ctx.stroke();
+                    // balón en la posición actual
+                    const bx=(1-p)*a.x0+p*a.x1;
+                    const by=(1-p)*p*(-2*a.peak)+((1-p)*a.y0+p*a.y1);
+                    drawBall(ctx,bx*W,by*H,a.r,a.alpha*2);
+                });
+                t++; requestAnimationFrame(tick);
+            })();
+        }
+
+        // ── VER_ELIMINATORIAS: bracket lines de torneo ──
+        else if (page === 'ver_eliminatorias') {
+            let t=0;
+            (function tick(){
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                const W=canvas.width,H=canvas.height;
+                const a=0.1+0.05*Math.sin(t*.007);
+                ctx.strokeStyle=`rgba(200,220,200,${a})`; ctx.lineWidth=1.5;
+                // dibuja estructura de bracket de 8 equipos (4 rondas)
+                const rounds=4, teams=8;
+                const colW=W/(rounds+1);
+                for(let r=0;r<rounds;r++){
+                    const slots=teams>>r;
+                    const rowH=H/slots;
+                    for(let s=0;s<slots;s+=2){
+                        const x1=colW*(r+.5), x2=colW*(r+1.5);
+                        const y1=rowH*(s+.5), y2=rowH*(s+1.5), ym=(y1+y2)/2;
+                        // líneas verticales de cada equipo
+                        ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x1+colW*.4,y1); ctx.stroke();
+                        ctx.beginPath(); ctx.moveTo(x1,y2); ctx.lineTo(x1+colW*.4,y2); ctx.stroke();
+                        // conector vertical
+                        ctx.beginPath(); ctx.moveTo(x1+colW*.4,y1); ctx.lineTo(x1+colW*.4,y2); ctx.stroke();
+                        // línea al ganador
+                        ctx.beginPath(); ctx.moveTo(x1+colW*.4,ym); ctx.lineTo(x2,ym); ctx.stroke();
                     }
                 }
+                // balón central con pulso
+                const pulse=1+0.1*Math.sin(t*.05);
+                ctx.save(); ctx.translate(W/2,H/2);
+                drawBall(ctx,0,0,18*pulse,0.3+0.1*Math.sin(t*.05));
+                ctx.restore();
                 t++; requestAnimationFrame(tick);
             })();
         }
 
-        // ── VER_PREDICCION: venas de mármol violeta/dorado ──
-        else if (page === 'ver_prediccion') {
-            const veins=Array.from({length:8},()=>{
-                const pts=Array.from({length:8},()=>({x:Math.random(),y:Math.random()}));
-                const isGold=Math.random()>.5;
-                return {pts,alpha:Math.random()*.1+.04,isGold};
-            });
-            let t=0;
-            (function tick(){
-                ctx.clearRect(0,0,canvas.width,canvas.height);
-                const W=canvas.width,H=canvas.height;
-                veins.forEach(v=>{
-                    const a=v.alpha*(0.7+0.3*Math.sin(t*.008));
-                    ctx.beginPath();
-                    ctx.moveTo(v.pts[0].x*W,v.pts[0].y*H);
-                    for(let i=1;i<v.pts.length-1;i++){
-                        const mx=(v.pts[i].x+v.pts[i+1].x)/2,my=(v.pts[i].y+v.pts[i+1].y)/2;
-                        ctx.quadraticCurveTo(v.pts[i].x*W,v.pts[i].y*H,mx*W,my*H);
-                    }
-                    ctx.strokeStyle=v.isGold?`rgba(210,170,50,${a})`:`rgba(160,120,255,${a})`;
-                    ctx.lineWidth=1.8; ctx.stroke();
-                });
-                t++; requestAnimationFrame(tick);
-            })();
-        }
-
-        // ── VER_ELIMINATORIAS: cosmos estrellado vibrante ──
-        else if (page === 'ver_eliminatorias') {
-            const stars=Array.from({length:200},()=>({
-                x:Math.random(), y:Math.random(),
-                r:Math.random()*2+.3,
-                alpha:Math.random()*.7+.2,
-                phase:Math.random()*Math.PI*2,
-                color:Math.random()>.6?'#fff':Math.random()>.5?'#c0a0ff':'#a0c8ff',
-            }));
-            let t=0;
-            (function tick(){
-                ctx.clearRect(0,0,canvas.width,canvas.height);
-                const W=canvas.width,H=canvas.height;
-                stars.forEach(s=>{
-                    const a=s.alpha*(0.5+0.5*Math.sin(s.phase+t*.01));
-                    ctx.beginPath(); ctx.arc(s.x*W,s.y*H,s.r,0,Math.PI*2);
-                    ctx.fillStyle=s.color; ctx.globalAlpha=a; ctx.fill();
-                });
-                ctx.globalAlpha=1; t++; requestAnimationFrame(tick);
-            })();
-        }
-
-        // ── NUEVO_NOMBRE: partículas verdes vibrantes ──
+        // ── NUEVO_NOMBRE: líneas de césped creciendo desde abajo ──
         else if (page === 'nuevo_nombre') {
-            const sparks=Array.from({length:50},()=>({
-                x:Math.random(), y:Math.random(),
-                r:Math.random()*2.5+.8,
-                alpha:Math.random()*.35+.1,
+            const blades=Array.from({length:60},()=>({
+                x:Math.random(),
+                h:Math.random()*.18+.04,
                 phase:Math.random()*Math.PI*2,
-                vy:-(Math.random()*.003+.001),
+                width:Math.random()*3+1.5,
+                alpha:Math.random()*.25+.08,
             }));
             let t=0;
             (function tick(){
                 ctx.clearRect(0,0,canvas.width,canvas.height);
                 const W=canvas.width,H=canvas.height;
-                sparks.forEach(s=>{
-                    s.y+=s.vy; if(s.y<0)s.y=1;
-                    const a=s.alpha*(0.4+0.6*Math.sin(s.phase+t*.014));
-                    ctx.beginPath(); ctx.arc(s.x*W,s.y*H,s.r,0,Math.PI*2);
-                    ctx.fillStyle=`rgba(46,204,113,${a})`; ctx.fill();
+                blades.forEach(b=>{
+                    const sway=Math.sin(b.phase+t*.02)*0.015;
+                    const tipX=b.x*W+sway*W;
+                    const tipY=H-(b.h+0.04*Math.sin(b.phase+t*.025))*H;
+                    const a=b.alpha*(0.6+0.4*Math.sin(b.phase+t*.015));
+                    ctx.beginPath();
+                    ctx.moveTo(b.x*W,H);
+                    ctx.quadraticCurveTo(b.x*W+sway*.5*W, H-(b.h*.6)*H, tipX, tipY);
+                    ctx.strokeStyle=`rgba(120,220,100,${a})`; ctx.lineWidth=b.width; ctx.stroke();
                 });
                 t++; requestAnimationFrame(tick);
             })();
