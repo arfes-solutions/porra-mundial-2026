@@ -1318,6 +1318,11 @@ HTML_TEMPLATE = """
         {# ── FASE ELIMINATORIA ── #}
         <div class="card p-4 mx-auto shadow-sm" style="max-width:1200px;">
             <h3 class="fw-bold text-success border-bottom pb-3 text-center">Fase Eliminatoria - {{ nombre }}</h3>
+            {% if elim_error %}
+            <div style="background:rgba(220,53,69,0.25);border:1px solid rgba(220,53,69,0.6);border-radius:10px;padding:14px 18px;margin-bottom:16px;color:#f8d7da;font-size:.9rem;">
+                ⚠️ {{ elim_error }}
+            </div>
+            {% endif %}
             <form method="POST" action="{{ url_for('public.eliminatorias_fase') }}" id="form-eliminatorias">
                 <div id="sec-octavos" class="fase-section fase-active mb-5">
                     <div class="mb-4">
@@ -2668,6 +2673,9 @@ def eliminatorias_fase():
             session.pop("pred_grupos", None)
             return redirect(url_for("public.welcome"))
         except Exception as exc:
+            import traceback, sys
+            print(f"[ERROR eliminatorias_fase] {exc}", file=sys.stderr)
+            print(traceback.format_exc(), file=sys.stderr)
             # Show error in the form so user can retry
             grupos_data = session.get("pred_grupos", {})
             clasificados = []
