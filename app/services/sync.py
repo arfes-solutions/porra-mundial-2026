@@ -245,11 +245,10 @@ def fetch_all(api_key: str) -> dict:
             letter = raw_group.replace("GROUP_", "").replace("Group ", "").strip()
             if not letter or len(letter) != 1:
                 continue
-            for row in standing.get("table", []):
-                pos  = row.get("position")
+            for idx, row in enumerate(standing.get("table", []), start=1):
                 name = _norm(row.get("team", {}).get("name", ""))
-                if pos in (1, 2, 3) and name:
-                    results[f"g_{letter.lower()}_{pos}"] = name
+                if name and idx <= 3:
+                    results[f"g_{letter.lower()}_{idx}"] = name
     except Exception:
         pass   # standings failure is non-fatal
 
