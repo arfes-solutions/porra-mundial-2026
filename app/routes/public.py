@@ -3046,6 +3046,19 @@ def health():
     return {"status": "ok"}
 
 
+@public_bp.route("/debug/fetchall")
+def debug_fetchall():
+    """Call fetch_all and return what the sync code actually processes."""
+    from flask import current_app
+    from app.services.sync import fetch_all
+    api_key = current_app.config.get("FOOTBALL_DATA_API_KEY", "")
+    if not api_key:
+        return {"error": "no api key"}, 500
+    data = fetch_all(api_key)
+    finished = [f for f in data.get("fixtures", []) if f.get("is_finished")]
+    return {"finished": finished}
+
+
 @public_bp.route("/debug/stored")
 def debug_stored():
     """Show what's actually stored in Supabase for finished matches."""
