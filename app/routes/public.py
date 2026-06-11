@@ -256,23 +256,23 @@ HTML_TEMPLATE = """
             position: fixed; inset: 0; z-index: -1; pointer-events: none;
         }
 
-        /* Glassmorphism cards */
+        /* Glassmorphism cards — semi-transparente para que el fondo filtre */
         body:not(.login-page) .card {
-            background: rgba(255,255,255,0.92) !important;
-            backdrop-filter: blur(22px) saturate(1.2);
-            -webkit-backdrop-filter: blur(22px) saturate(1.2);
-            border: 1px solid rgba(255,255,255,0.55) !important;
-            box-shadow: 0 16px 48px rgba(0,0,0,0.38), 0 0 0 1px rgba(255,255,255,0.18) inset !important;
+            background: rgba(255,255,255,0.78) !important;
+            backdrop-filter: blur(28px) saturate(1.5);
+            -webkit-backdrop-filter: blur(28px) saturate(1.5);
+            border: 1px solid rgba(255,255,255,0.6) !important;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.22), 0 0 0 1px rgba(255,255,255,0.3) inset !important;
             border-radius: 20px !important;
         }
 
         /* Header glassmorphism */
         body:not(.login-page) .header-banner {
-            background: rgba(6, 36, 18, 0.82) !important;
-            backdrop-filter: blur(16px) saturate(1.4);
-            -webkit-backdrop-filter: blur(16px) saturate(1.4);
-            box-shadow: 0 4px 32px rgba(0,0,0,0.5) !important;
-            border-bottom: 1px solid rgba(255,255,255,0.07);
+            background: rgba(6, 36, 18, 0.75) !important;
+            backdrop-filter: blur(18px) saturate(1.6);
+            -webkit-backdrop-filter: blur(18px) saturate(1.6);
+            box-shadow: 0 4px 32px rgba(0,0,0,0.35) !important;
+            border-bottom: 1px solid rgba(255,255,255,0.12);
         }
 
         /* Buttons upgrade */
@@ -282,50 +282,50 @@ HTML_TEMPLATE = """
             border-radius: 10px !important;
         }
 
-        /* ── INICIO / RANKING ── oscuro dorado */
+        /* ── INICIO / RANKING ── azul marino + dorado */
         body.page-inicio .page-bg {
-            background: radial-gradient(ellipse at 15% 10%, #1a1000 0%, #080500 55%, #000 100%);
+            background: linear-gradient(135deg, #0a1628 0%, #1a2d4a 40%, #0d2040 70%, #08111e 100%);
         }
 
-        /* ── FASE GRUPOS ── campo oscuro */
+        /* ── FASE GRUPOS ── verde esmeralda intenso */
         body.page-fase_grupos .page-bg {
-            background: linear-gradient(180deg, #010903 0%, #041508 60%, #010903 100%);
+            background: linear-gradient(160deg, #0a2e12 0%, #0f4520 40%, #1a6030 60%, #0a2e12 100%);
         }
 
-        /* ── ELIMINATORIAS ── rayos dorados */
+        /* ── ELIMINATORIAS ── púrpura a dorado ámbar */
         body.page-eliminatorias .page-bg {
-            background: radial-gradient(ellipse at 50% 110%, #1c0d00 0%, #090400 60%, #000 100%);
+            background: linear-gradient(135deg, #1a0a2e 0%, #2d1245 40%, #3a1a10 70%, #1a0800 100%);
         }
 
-        /* ── PREDICCION COMPLETA ── celebración */
+        /* ── PREDICCION COMPLETA ── verde brillante festivo */
         body.page-prediccion_completa .page-bg {
-            background: radial-gradient(ellipse at 50% 50%, #0a180a 0%, #030803 100%);
+            background: linear-gradient(135deg, #0a1f0a 0%, #1a4020 40%, #0f2d10 70%, #0a1808 100%);
         }
 
-        /* ── VER GRUPOS ── estadio azul */
+        /* ── VER GRUPOS ── azul noche estadio */
         body.page-ver_grupos .page-bg {
-            background: linear-gradient(160deg, #010610 0%, #030c1e 55%, #010610 100%);
+            background: linear-gradient(160deg, #050e28 0%, #0a1a40 40%, #102255 60%, #050e28 100%);
         }
 
-        /* ── VER HORARIOS ── led neón */
+        /* ── VER HORARIOS ── verde azulado neón */
         body.page-ver_horarios .page-bg,
         body.page-ver_horarios_dinamico .page-bg {
-            background: #000810;
+            background: linear-gradient(135deg, #020d14 0%, #041e28 45%, #062030 70%, #020d14 100%);
         }
 
-        /* ── VER PREDICCION ── mármol oscuro */
+        /* ── VER PREDICCION ── índigo / violeta rico */
         body.page-ver_prediccion .page-bg {
-            background: linear-gradient(135deg, #08080f 0%, #0e0c16 55%, #08080f 100%);
+            background: linear-gradient(135deg, #0e0820 0%, #1a1035 45%, #221545 70%, #0e0820 100%);
         }
 
-        /* ── NUEVO NOMBRE ── verde minimal */
+        /* ── NUEVO NOMBRE ── verde vibrante */
         body.page-nuevo_nombre .page-bg {
-            background: linear-gradient(160deg, #010803 0%, #04100a 100%);
+            background: linear-gradient(160deg, #082010 0%, #0f3820 50%, #0a2814 100%);
         }
 
-        /* ── VER ELIMINATORIAS ── cosmos */
+        /* ── VER ELIMINATORIAS ── cosmos azul profundo */
         body.page-ver_eliminatorias .page-bg {
-            background: radial-gradient(ellipse at 50% 0%, #08041e 0%, #020108 100%);
+            background: linear-gradient(135deg, #08051e 0%, #100a30 45%, #180f40 70%, #08051e 100%);
         }
     </style>
 </head>
@@ -1526,208 +1526,227 @@ HTML_TEMPLATE = """
         resize();
         window.addEventListener('resize', resize);
 
-        // ── INICIO: partículas doradas flotando ──
+        // ── INICIO: estrellas doradas + nebulosa azul ──
         if (page === 'inicio') {
-            const P = Array.from({length:70}, () => ({
-                x: Math.random(), y: Math.random(),
-                r: Math.random()*2+0.5,
-                vx: (Math.random()-.5)*.3, vy: -(Math.random()*.5+.1),
-                alpha: Math.random()*.5+.15,
-                color: Math.random()>.4 ? '#f0c040' : '#ffe8a0',
-                phase: Math.random()*Math.PI*2,
+            const P = Array.from({length:100}, () => ({
+                x:Math.random(), y:Math.random(),
+                r:Math.random()*3+0.8,
+                vx:(Math.random()-.5)*.25, vy:-(Math.random()*.4+.08),
+                alpha:Math.random()*.7+.25,
+                color:Math.random()>.4?'#f0c040':Math.random()>.5?'#fff':'#a0d8ff',
+                phase:Math.random()*Math.PI*2,
             }));
+            // nebulosa de fondo
+            const grad=ctx.createRadialGradient(canvas.width*.3,canvas.height*.4,0,canvas.width*.3,canvas.height*.4,canvas.width*.6);
+            grad.addColorStop(0,'rgba(30,80,160,0.18)');
+            grad.addColorStop(1,'rgba(0,0,0,0)');
             let t=0;
             (function tick(){
                 ctx.clearRect(0,0,canvas.width,canvas.height);
+                ctx.fillStyle=grad; ctx.fillRect(0,0,canvas.width,canvas.height);
                 P.forEach(p => {
-                    p.x += p.vx/canvas.width; p.y += p.vy/canvas.height;
+                    p.x+=p.vx/canvas.width; p.y+=p.vy/canvas.height;
                     if(p.y<-.01){p.y=1.01;p.x=Math.random();}
                     if(p.x<0)p.x=1; if(p.x>1)p.x=0;
-                    const a = p.alpha*(0.6+0.4*Math.sin(p.phase+t*.02));
-                    ctx.beginPath();
-                    ctx.arc(p.x*canvas.width, p.y*canvas.height, p.r, 0, Math.PI*2);
-                    ctx.fillStyle = p.color; ctx.globalAlpha = a; ctx.fill();
+                    const a=p.alpha*(0.55+0.45*Math.sin(p.phase+t*.018));
+                    ctx.beginPath(); ctx.arc(p.x*canvas.width,p.y*canvas.height,p.r,0,Math.PI*2);
+                    ctx.fillStyle=p.color; ctx.globalAlpha=a; ctx.fill();
                 });
-                ctx.globalAlpha=1; t++;
-                requestAnimationFrame(tick);
+                ctx.globalAlpha=1; t++; requestAnimationFrame(tick);
             })();
         }
 
-        // ── FASE_GRUPOS: líneas de campo pulsantes ──
+        // ── FASE_GRUPOS: campo de fútbol con líneas brillantes ──
         else if (page === 'fase_grupos') {
             let t=0;
             (function tick(){
                 ctx.clearRect(0,0,canvas.width,canvas.height);
                 const W=canvas.width,H=canvas.height;
-                const a = 0.05+0.025*Math.sin(t*.008);
-                ctx.strokeStyle=`rgba(255,255,255,${a})`; ctx.lineWidth=1.5;
+                const a=0.14+0.07*Math.sin(t*.006);
+                ctx.strokeStyle=`rgba(255,255,255,${a})`; ctx.lineWidth=2;
                 ctx.beginPath(); ctx.moveTo(W/2,0); ctx.lineTo(W/2,H); ctx.stroke();
                 ctx.beginPath(); ctx.arc(W/2,H/2,Math.min(W,H)*.14,0,Math.PI*2); ctx.stroke();
-                ctx.strokeRect(W*.06,H*.06,W*.88,H*.88);
-                ctx.strokeRect(W*.06,H*.28,W*.16,H*.44);
-                ctx.strokeRect(W*.78,H*.28,W*.16,H*.44);
-                ctx.beginPath(); ctx.arc(W/2,H/2,4,0,Math.PI*2);
-                ctx.fillStyle=`rgba(255,255,255,${a*2})`; ctx.fill();
-                t++; requestAnimationFrame(tick);
-            })();
-        }
-
-        // ── ELIMINATORIAS: rayos dorados desde abajo ──
-        else if (page === 'eliminatorias') {
-            let t=0;
-            (function tick(){
-                ctx.clearRect(0,0,canvas.width,canvas.height);
-                const W=canvas.width,H=canvas.height,cx=W/2,cy=H*1.1;
-                for(let i=0;i<14;i++){
-                    const angle = (i/14)*Math.PI - Math.PI/2 + t*.001;
-                    const a = (0.04+0.025*Math.sin(t*.025+i))*(i%2===0?1.4:.7);
-                    const spread = Math.PI/14*.6;
-                    const gx = cx+Math.cos(angle)*H*1.5, gy = cy+Math.sin(angle)*H*1.5;
-                    const grad = ctx.createLinearGradient(cx,cy,gx,gy);
-                    grad.addColorStop(0,`rgba(240,170,20,${a*2.5})`);
-                    grad.addColorStop(1,'rgba(240,170,20,0)');
-                    ctx.beginPath();
-                    ctx.moveTo(cx,cy);
-                    ctx.arc(cx,cy,H*1.8,angle-spread,angle+spread);
-                    ctx.closePath();
-                    ctx.fillStyle=grad; ctx.fill();
+                ctx.strokeRect(W*.06,H*.07,W*.88,H*.86);
+                ctx.strokeRect(W*.06,H*.28,W*.17,H*.44);
+                ctx.strokeRect(W*.77,H*.28,W*.17,H*.44);
+                ctx.strokeRect(W*.06,H*.37,W*.07,H*.26);
+                ctx.strokeRect(W*.87,H*.37,W*.07,H*.26);
+                ctx.beginPath(); ctx.arc(W/2,H/2,5,0,Math.PI*2);
+                ctx.fillStyle=`rgba(255,255,255,${a*2.5})`; ctx.fill();
+                // rayas del campo (césped)
+                ctx.lineWidth=1;
+                for(let i=0;i<8;i++){
+                    const x=W*.06+i*(W*.88/8);
+                    ctx.strokeStyle=`rgba(255,255,255,${0.04+0.02*Math.sin(t*.004+i)})`;
+                    ctx.beginPath(); ctx.moveTo(x,H*.07); ctx.lineTo(x,H*.93); ctx.stroke();
                 }
                 t++; requestAnimationFrame(tick);
             })();
         }
 
-        // ── PREDICCION_COMPLETA: confeti festivo ──
+        // ── ELIMINATORIAS: rayos ámbar + destellos púrpura ──
+        else if (page === 'eliminatorias') {
+            let t=0;
+            (function tick(){
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                const W=canvas.width,H=canvas.height,cx=W/2,cy=H*1.05;
+                for(let i=0;i<16;i++){
+                    const angle=(i/16)*Math.PI-Math.PI/2+t*.0008;
+                    const a=(0.08+0.05*Math.sin(t*.02+i))*(i%2===0?1.5:.8);
+                    const spread=Math.PI/16*.7;
+                    const color=i%3===0?`rgba(200,100,255,${a})`:`rgba(240,160,20,${a})`;
+                    const gx=cx+Math.cos(angle)*H*1.6,gy=cy+Math.sin(angle)*H*1.6;
+                    const grad=ctx.createLinearGradient(cx,cy,gx,gy);
+                    grad.addColorStop(0,color.replace(`,${a})`,`,${a*2.5})`));
+                    grad.addColorStop(1,'rgba(240,160,20,0)');
+                    ctx.beginPath(); ctx.moveTo(cx,cy);
+                    ctx.arc(cx,cy,H*2,angle-spread,angle+spread);
+                    ctx.closePath(); ctx.fillStyle=grad; ctx.fill();
+                }
+                t++; requestAnimationFrame(tick);
+            })();
+        }
+
+        // ── PREDICCION_COMPLETA: confeti vibrante ──
         else if (page === 'prediccion_completa') {
-            const pieces = Array.from({length:90}, () => ({
-                x:Math.random()*1, y:Math.random()*1,
-                vx:(Math.random()-.5)*.004, vy:Math.random()*.006+.002,
-                size:Math.random()*7+3, angle:Math.random()*Math.PI*2,
-                spin:(Math.random()-.5)*.06,
-                color:`hsl(${Math.floor(Math.random()*360)},85%,62%)`,
-                alpha:Math.random()*.45+.2,
+            const pieces=Array.from({length:120},()=>({
+                x:Math.random(), y:Math.random(),
+                vx:(Math.random()-.5)*.005, vy:Math.random()*.007+.002,
+                size:Math.random()*10+4, angle:Math.random()*Math.PI*2,
+                spin:(Math.random()-.5)*.08,
+                color:`hsl(${Math.floor(Math.random()*360)},90%,65%)`,
+                alpha:Math.random()*.55+.3,
             }));
             (function tick(){
                 ctx.clearRect(0,0,canvas.width,canvas.height);
                 const W=canvas.width,H=canvas.height;
-                pieces.forEach(p => {
+                pieces.forEach(p=>{
                     p.x+=p.vx; p.y+=p.vy; p.angle+=p.spin;
                     if(p.y>1.02){p.y=-.02;p.x=Math.random();}
-                    ctx.save();
-                    ctx.translate(p.x*W,p.y*H); ctx.rotate(p.angle);
+                    ctx.save(); ctx.translate(p.x*W,p.y*H); ctx.rotate(p.angle);
                     ctx.globalAlpha=p.alpha; ctx.fillStyle=p.color;
-                    ctx.fillRect(-p.size/2,-p.size/4,p.size,p.size/3);
+                    ctx.fillRect(-p.size/2,-p.size/4,p.size,p.size/2.5);
                     ctx.restore();
                 });
                 ctx.globalAlpha=1; requestAnimationFrame(tick);
             })();
         }
 
-        // ── VER_GRUPOS: público del estadio ──
+        // ── VER_GRUPOS: público del estadio vibrante ──
         else if (page === 'ver_grupos') {
-            const dots = Array.from({length:220}, () => ({
-                x:Math.random(), y:Math.random()*.7+.1,
-                r:Math.random()*1.8+.8,
+            const dots=Array.from({length:300},()=>({
+                x:Math.random(), y:Math.random()*.75+.1,
+                r:Math.random()*2.5+1,
                 hue:Math.floor(Math.random()*360),
-                alpha:Math.random()*.12+.04,
+                alpha:Math.random()*.22+.08,
                 phase:Math.random()*Math.PI*2,
             }));
             let t=0;
             (function tick(){
                 ctx.clearRect(0,0,canvas.width,canvas.height);
                 const W=canvas.width,H=canvas.height;
-                dots.forEach(d => {
-                    const a=d.alpha*(0.5+0.5*Math.sin(d.phase+t*.018));
+                dots.forEach(d=>{
+                    const a=d.alpha*(0.4+0.6*Math.sin(d.phase+t*.016));
                     ctx.beginPath(); ctx.arc(d.x*W,d.y*H,d.r,0,Math.PI*2);
-                    ctx.fillStyle=`hsla(${d.hue},75%,65%,${a})`; ctx.fill();
+                    ctx.fillStyle=`hsla(${d.hue},85%,70%,${a})`; ctx.fill();
                 });
                 t++; requestAnimationFrame(tick);
             })();
         }
 
-        // ── VER_HORARIOS: cuadrícula LED + scanline ──
+        // ── VER_HORARIOS: cuadrícula LED cyan + scanline ──
         else if (page === 'ver_horarios' || page === 'ver_horarios_dinamico') {
             let t=0;
             (function tick(){
                 ctx.clearRect(0,0,canvas.width,canvas.height);
-                const W=canvas.width,H=canvas.height,sp=32;
-                ctx.strokeStyle='rgba(0,255,100,0.04)'; ctx.lineWidth=1;
+                const W=canvas.width,H=canvas.height,sp=30;
+                ctx.strokeStyle='rgba(0,220,255,0.08)'; ctx.lineWidth=1;
                 for(let x=0;x<W;x+=sp){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
                 for(let y=0;y<H;y+=sp){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-                const sy=(t*1.5)%H;
-                const g=ctx.createLinearGradient(0,sy-50,0,sy+50);
-                g.addColorStop(0,'rgba(0,255,100,0)');
-                g.addColorStop(.5,'rgba(0,255,100,0.07)');
-                g.addColorStop(1,'rgba(0,255,100,0)');
-                ctx.fillStyle=g; ctx.fillRect(0,sy-50,W,100);
-                t++; requestAnimationFrame(tick);
-            })();
-        }
-
-        // ── VER_PREDICCION: venas de mármol dorado ──
-        else if (page === 'ver_prediccion') {
-            const veins = Array.from({length:6}, () => {
-                const pts = Array.from({length:7}, () => ({x:Math.random(),y:Math.random()}));
-                return {pts, alpha:Math.random()*.06+.02};
-            });
-            ctx.clearRect(0,0,canvas.width,canvas.height);
-            const W=canvas.width,H=canvas.height;
-            veins.forEach(v => {
-                ctx.beginPath();
-                ctx.moveTo(v.pts[0].x*W,v.pts[0].y*H);
-                for(let i=1;i<v.pts.length-1;i++){
-                    const mx=(v.pts[i].x+v.pts[i+1].x)/2, my=(v.pts[i].y+v.pts[i+1].y)/2;
-                    ctx.quadraticCurveTo(v.pts[i].x*W,v.pts[i].y*H,mx*W,my*H);
-                }
-                ctx.strokeStyle=`rgba(200,160,40,${v.alpha})`; ctx.lineWidth=1.5; ctx.stroke();
-            });
-            // redraw on resize
-            window.addEventListener('resize', () => {
-                ctx.clearRect(0,0,canvas.width,canvas.height);
-                veins.forEach(v => {
-                    ctx.beginPath(); ctx.moveTo(v.pts[0].x*canvas.width,v.pts[0].y*canvas.height);
-                    for(let i=1;i<v.pts.length-1;i++){
-                        const mx=(v.pts[i].x+v.pts[i+1].x)/2, my=(v.pts[i].y+v.pts[i+1].y)/2;
-                        ctx.quadraticCurveTo(v.pts[i].x*canvas.width,v.pts[i].y*canvas.height,mx*canvas.width,my*canvas.height);
+                const sy=(t*1.8)%H;
+                const g=ctx.createLinearGradient(0,sy-60,0,sy+60);
+                g.addColorStop(0,'rgba(0,220,255,0)');
+                g.addColorStop(.5,'rgba(0,220,255,0.12)');
+                g.addColorStop(1,'rgba(0,220,255,0)');
+                ctx.fillStyle=g; ctx.fillRect(0,sy-60,W,120);
+                // puntos LED en intersecciones
+                if(t%3===0){
+                    for(let x=0;x<W;x+=sp*3){
+                        for(let y=0;y<H;y+=sp*3){
+                            const a=0.05+0.05*Math.sin(t*.04+x*.01+y*.01);
+                            ctx.beginPath(); ctx.arc(x,y,2,0,Math.PI*2);
+                            ctx.fillStyle=`rgba(0,255,200,${a})`; ctx.fill();
+                        }
                     }
-                    ctx.strokeStyle=`rgba(200,160,40,${v.alpha})`; ctx.lineWidth=1.5; ctx.stroke();
-                });
-            });
+                }
+                t++; requestAnimationFrame(tick);
+            })();
         }
 
-        // ── VER_ELIMINATORIAS: cosmos estrellado ──
-        else if (page === 'ver_eliminatorias') {
-            const stars = Array.from({length:160}, () => ({
-                x:Math.random(), y:Math.random(),
-                r:Math.random()*1.4+.3,
-                alpha:Math.random()*.55+.1,
-                phase:Math.random()*Math.PI*2,
-            }));
+        // ── VER_PREDICCION: venas de mármol violeta/dorado ──
+        else if (page === 'ver_prediccion') {
+            const veins=Array.from({length:8},()=>{
+                const pts=Array.from({length:8},()=>({x:Math.random(),y:Math.random()}));
+                const isGold=Math.random()>.5;
+                return {pts,alpha:Math.random()*.1+.04,isGold};
+            });
             let t=0;
             (function tick(){
                 ctx.clearRect(0,0,canvas.width,canvas.height);
                 const W=canvas.width,H=canvas.height;
-                stars.forEach(s => {
-                    const a=s.alpha*(0.55+0.45*Math.sin(s.phase+t*.012));
-                    ctx.beginPath(); ctx.arc(s.x*W,s.y*H,s.r,0,Math.PI*2);
-                    ctx.fillStyle=`rgba(190,170,255,${a})`; ctx.fill();
+                veins.forEach(v=>{
+                    const a=v.alpha*(0.7+0.3*Math.sin(t*.008));
+                    ctx.beginPath();
+                    ctx.moveTo(v.pts[0].x*W,v.pts[0].y*H);
+                    for(let i=1;i<v.pts.length-1;i++){
+                        const mx=(v.pts[i].x+v.pts[i+1].x)/2,my=(v.pts[i].y+v.pts[i+1].y)/2;
+                        ctx.quadraticCurveTo(v.pts[i].x*W,v.pts[i].y*H,mx*W,my*H);
+                    }
+                    ctx.strokeStyle=v.isGold?`rgba(210,170,50,${a})`:`rgba(160,120,255,${a})`;
+                    ctx.lineWidth=1.8; ctx.stroke();
                 });
                 t++; requestAnimationFrame(tick);
             })();
         }
 
-        // ── NUEVO_NOMBRE: destellos verdes sutiles ──
-        else if (page === 'nuevo_nombre') {
-            const sparks = Array.from({length:30}, () => ({
+        // ── VER_ELIMINATORIAS: cosmos estrellado vibrante ──
+        else if (page === 'ver_eliminatorias') {
+            const stars=Array.from({length:200},()=>({
                 x:Math.random(), y:Math.random(),
-                r:Math.random()*1.5+.5, alpha:Math.random()*.2+.05,
+                r:Math.random()*2+.3,
+                alpha:Math.random()*.7+.2,
                 phase:Math.random()*Math.PI*2,
+                color:Math.random()>.6?'#fff':Math.random()>.5?'#c0a0ff':'#a0c8ff',
             }));
             let t=0;
             (function tick(){
                 ctx.clearRect(0,0,canvas.width,canvas.height);
                 const W=canvas.width,H=canvas.height;
-                sparks.forEach(s => {
-                    const a=s.alpha*(0.4+0.6*Math.sin(s.phase+t*.015));
+                stars.forEach(s=>{
+                    const a=s.alpha*(0.5+0.5*Math.sin(s.phase+t*.01));
+                    ctx.beginPath(); ctx.arc(s.x*W,s.y*H,s.r,0,Math.PI*2);
+                    ctx.fillStyle=s.color; ctx.globalAlpha=a; ctx.fill();
+                });
+                ctx.globalAlpha=1; t++; requestAnimationFrame(tick);
+            })();
+        }
+
+        // ── NUEVO_NOMBRE: partículas verdes vibrantes ──
+        else if (page === 'nuevo_nombre') {
+            const sparks=Array.from({length:50},()=>({
+                x:Math.random(), y:Math.random(),
+                r:Math.random()*2.5+.8,
+                alpha:Math.random()*.35+.1,
+                phase:Math.random()*Math.PI*2,
+                vy:-(Math.random()*.003+.001),
+            }));
+            let t=0;
+            (function tick(){
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                const W=canvas.width,H=canvas.height;
+                sparks.forEach(s=>{
+                    s.y+=s.vy; if(s.y<0)s.y=1;
+                    const a=s.alpha*(0.4+0.6*Math.sin(s.phase+t*.014));
                     ctx.beginPath(); ctx.arc(s.x*W,s.y*H,s.r,0,Math.PI*2);
                     ctx.fillStyle=`rgba(46,204,113,${a})`; ctx.fill();
                 });
