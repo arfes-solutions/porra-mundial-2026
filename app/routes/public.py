@@ -1182,7 +1182,7 @@ HTML_TEMPLATE = """
         </div>
 
         {% elif vista == 'fase_grupos' %}
-        <div class="card p-3 mb-4 shadow-sm border-start border-success border-4 mx-auto" style="max-width:1200px;background-color:#fff;">
+        <div class="card p-3 mb-4 shadow-sm border-start border-success border-4 mx-auto" style="max-width:1200px;">
             <h5 class="fw-bold text-success mb-2">📋 Reglas de Clasificación de la Fase de Grupos</h5>
             <p class="text-muted small mb-2">
                 En el Mundial 2026, se clasifican para dieciseisavos de final los dos primeros equipos de cada grupo y además los 8 mejores terceros clasificados en general.<br>Por tanto:
@@ -1415,27 +1415,40 @@ HTML_TEMPLATE = """
             }
 
             /* R32 match slot */
-            .bkt-mslot { flex:1; min-height:56px; background:#fff; border:1px solid #dee2e6; border-radius:6px; overflow:hidden; }
-            .bkt-mslot-l { border:2px solid #198754; }
-            .bkt-mslot-r { border:2px solid #0d6efd; }
-            .bkt-mrow { display:flex; align-items:center; gap:6px; padding:6px 8px; font-size:.75rem; font-weight:600; }
-            .bkt-mrow + .bkt-mrow { border-top:1px solid #f0f0f0; }
+            .bkt-mslot { flex:1; min-height:56px; background:rgba(5,20,10,0.72); border:1px solid rgba(255,255,255,0.15); border-radius:6px; overflow:hidden; backdrop-filter:blur(8px); }
+            .bkt-mslot-l { border:2px solid rgba(46,204,113,0.7); box-shadow:0 0 8px rgba(46,204,113,0.2); }
+            .bkt-mslot-r { border:2px solid rgba(100,160,255,0.7); box-shadow:0 0 8px rgba(100,160,255,0.2); }
+            .bkt-mrow { display:flex; align-items:center; gap:6px; padding:6px 8px; font-size:.75rem; font-weight:600; color:rgba(255,255,255,0.88); }
+            .bkt-mrow + .bkt-mrow { border-top:1px solid rgba(255,255,255,0.08); }
             .bkt-mflag { width:18px; height:13px; border-radius:2px; object-fit:cover; flex-shrink:0; }
             .bkt-mname { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-            .bkt-mtbd { color:#ccc; font-style:italic; font-weight:400; font-size:.68rem; }
+            .bkt-mtbd { color:rgba(255,255,255,0.3); font-style:italic; font-weight:400; font-size:.68rem; }
 
             /* Placeholder slots (R16, QF, SF) */
-            .bkt-ph { flex:none; height:60px; background:#f8f9fa; border:1px solid #dee2e6; border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:.58rem; color:#adb5bd; }
+            .bkt-ph { flex:none; height:60px; background:rgba(5,20,10,0.55); border:1px solid rgba(255,255,255,0.10); border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:.58rem; color:rgba(255,255,255,0.3); }
             .bkt-col-mid .bkt-grp { justify-content:space-around; }
 
+            /* Connector arms — color verde/dorado */
+            .bkt-half-l .bkt-col-r32 .bkt-grp::after,
+            .bkt-half-l .bkt-col-mid .bkt-grp::after,
+            .bkt-half-l .bkt-col-sf .bkt-grp::after {
+                border-color: rgba(46,204,113,0.45) !important;
+            }
+            .bkt-half-r .bkt-col-r32 .bkt-grp::after,
+            .bkt-half-r .bkt-col-mid .bkt-grp::after,
+            .bkt-half-r .bkt-col-sf .bkt-grp::after {
+                border-color: rgba(100,160,255,0.45) !important;
+            }
+
             /* Thirds pool */
-            .bkt-thirds { text-align:center; margin-top:14px; padding-top:12px; border-top:1px dashed #dee2e6; }
+            .bkt-thirds { text-align:center; margin-top:14px; padding-top:12px; border-top:1px dashed rgba(255,255,255,0.15); }
             .bkt-third-pill {
                 display:inline-flex; align-items:center; gap:6px;
-                background:#fff; color:#212529; border:2px solid #fd7e14;
+                background:rgba(5,20,10,0.72); color:rgba(255,255,255,0.88); border:2px solid rgba(253,126,20,0.6);
                 border-radius:20px; padding:7px 14px;
                 font-size:.82rem; font-weight:700; margin:4px;
-                box-shadow: 0 1px 4px rgba(253,126,20,.15);
+                backdrop-filter:blur(8px);
+                box-shadow: 0 0 8px rgba(253,126,20,0.2);
             }
         </style>
         <script>
