@@ -2212,6 +2212,7 @@ def _get_match_info():
 
 
 def _render(vista, **kwargs):
+    _auto_sync()
     live_matches = kwargs.pop("live_matches", None)
     next_match   = kwargs.pop("next_match", None)
     if live_matches is None and next_match is None:
