@@ -3048,15 +3048,35 @@ def health():
 
 @public_bp.route("/debug/fetchall")
 def debug_fetchall():
-    """Call fetch_all and return what the sync code actually processes."""
+    """Show raw score field from API vs what fetch_all extracts."""
     from flask import current_app
-    from app.services.sync import fetch_all
+    import requests as _r
     api_key = current_app.config.get("FOOTBALL_DATA_API_KEY", "")
     if not api_key:
         return {"error": "no api key"}, 500
-    data = fetch_all(api_key)
-    finished = [f for f in data.get("fixtures", []) if f.get("is_finished")]
-    return {"finished": finished}
+    r = _r.get(
+        "https://api.football-data.org/v4/competitions/WC/matches",
+        headers={"X-Auth-Token": api_key},
+        timeout=15,
+    )
+    matches = r.json().get("matches", [])
+    finished = []
+    for m in matches:
+        if m.get("status") not in ("FINISHED", "AWARDED"):
+            continue
+        score = m.get("score", {})
+        ft = score.get("fullTime") or {}
+        finished.append({
+            "home": m.get("homeTeam", {}).get("name"),
+            "away": m.get("awayTeam", {}).get("name"),
+            "status": m.get("status"),
+            "raw_score": score,
+            "raw_fullTime": score.get("fullTime"),
+            "ft_after_or": ft,
+            "home_score": ft.get("home"),
+            "away_score": ft.get("away"),
+        })
+    return {"http_status": r.status_code, "finished": finished}
 
 
 @public_bp.route("/debug/stored")
