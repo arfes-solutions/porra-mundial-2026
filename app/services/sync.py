@@ -167,6 +167,21 @@ def fetch_all(api_key: str) -> dict:
             away_score = ft.get("away")
             winner_key = score.get("winner")           # HOME_TEAM / AWAY_TEAM / DRAW
 
+            # If the bulk endpoint returned null for a finished match, fetch it individually
+            if status in _STATUS_FINISHED and (home_score is None or away_score is None):
+                try:
+                    match_id = m.get("id")
+                    if match_id:
+                        r2 = _req.get(f"{_BASE}/matches/{match_id}", headers=_headers(api_key), timeout=10)
+                        if r2.status_code == 200:
+                            ft2 = (r2.json().get("score") or {}).get("fullTime") or {}
+                            if ft2.get("home") is not None:
+                                home_score = ft2["home"]
+                                away_score = ft2.get("away")
+                                winner_key = (r2.json().get("score") or {}).get("winner", winner_key)
+                except Exception:
+                    pass
+
             fecha, hora = _utc_to_peninsular(utc_date)
             label, round_key = _STAGE_LABELS.get(stage, (stage, None))
             group_letter = group_raw.replace("GROUP_", "") if group_raw.startswith("GROUP_") else ""
