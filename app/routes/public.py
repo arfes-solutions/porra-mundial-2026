@@ -3044,3 +3044,29 @@ def sync_results():
 @public_bp.route("/health")
 def health():
     return {"status": "ok"}
+
+
+@public_bp.route("/debug/fixtures")
+def debug_fixtures():
+    """Show raw fixture data for finished matches to diagnose score issues."""
+    from flask import current_app
+    api_key = current_app.config.get("FOOTBALL_DATA_API_KEY", "")
+    if not api_key:
+        return {"error": "no api key"}, 500
+    import requests as _r
+    r = _r.get(
+        "https://api.football-data.org/v4/competitions/WC/matches",
+        headers={"X-Auth-Token": api_key},
+        timeout=15,
+    )
+    matches = r.json().get("matches", [])
+    finished = [
+        {
+            "home": m.get("homeTeam", {}).get("name"),
+            "away": m.get("awayTeam", {}).get("name"),
+            "status": m.get("status"),
+            "score": m.get("score"),
+        }
+        for m in matches if m.get("status") in ("FINISHED", "AWARDED", "IN_PLAY", "PAUSED")
+    ]
+    return {"count": len(finished), "matches": finished}
