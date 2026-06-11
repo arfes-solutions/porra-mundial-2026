@@ -14,7 +14,9 @@ def _headers():
 
 def _url(path):
     base = current_app.config.get("SUPABASE_URL", "").rstrip("/")
-    return f"{base}/rest/v1/{path}"
+    # Prefix all tables to avoid mixing data with other apps in the same Supabase project
+    prefix = current_app.config.get("SUPABASE_TABLE_PREFIX", "")
+    return f"{base}/rest/v1/{prefix}{path}"
 
 
 def _check(response):

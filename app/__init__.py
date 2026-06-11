@@ -23,6 +23,7 @@ def create_app(test_config=None):
         STORAGE_BACKEND=os.environ.get("STORAGE_BACKEND", "supabase"),
         SUPABASE_URL=os.environ.get("SUPABASE_URL"),
         SUPABASE_SERVICE_ROLE_KEY=os.environ.get("SUPABASE_SERVICE_ROLE_KEY"),
+        SUPABASE_TABLE_PREFIX=os.environ.get("SUPABASE_TABLE_PREFIX", "porra_"),
         ADMIN_PASSWORD=os.environ.get("ADMIN_PASSWORD", ""),
         FOOTBALL_DATA_API_KEY=os.environ.get("FOOTBALL_DATA_API_KEY", ""),
         SYNC_SECRET=os.environ.get("SYNC_SECRET", ""),
