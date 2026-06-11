@@ -37,7 +37,7 @@ HTML_TEMPLATE = """
     <title>Porra Mundial 2026</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏆</text></svg>">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Poppins', sans-serif; background-color: transparent; color: #2c3e50; padding-top: 110px; }
         body.login-page { background-color: #000; padding-top: 0; overflow: hidden; }
@@ -263,9 +263,11 @@ HTML_TEMPLATE = """
         /* Overlay oscuro encima de la foto */
         .page-bg::after {
             content: ''; position: absolute; inset: 0;
-            background: rgba(0,0,0,0.52);
+            background: rgba(0,0,0,0.30);
         }
-        #page-canvas { display: none; }
+        #page-canvas {
+            position: fixed; inset: 0; z-index: -1; pointer-events: none;
+        }
 
         /* Animaciones Ken Burns */
         @keyframes kb-zoom-in  { from { transform: scale(1);    } to { transform: scale(1.10); } }
@@ -461,13 +463,32 @@ HTML_TEMPLATE = """
             opacity: 0.35 !important;
         }
 
-        /* Headings dentro de cards */
+        /* Headings dentro de cards — Oswald */
         body:not(.login-page) .card h1,
         body:not(.login-page) .card h2,
         body:not(.login-page) .card h3,
         body:not(.login-page) .card h4,
         body:not(.login-page) .card h5,
-        body:not(.login-page) .card h6 { color: #fff !important; }
+        body:not(.login-page) .card h6 {
+            color: #fff !important;
+            font-family: 'Oswald', 'Poppins', sans-serif !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.5px;
+        }
+        /* Título principal de cada page (h2/h3 fuera de card también) */
+        body:not(.login-page) h1, body:not(.login-page) h2,
+        body:not(.login-page) h3, body:not(.login-page) h4 {
+            font-family: 'Oswald', 'Poppins', sans-serif !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.5px;
+        }
+        /* Header principal */
+        body:not(.login-page) .header-banner h1 {
+            font-family: 'Oswald', sans-serif !important;
+            font-weight: 700 !important;
+            letter-spacing: 2px !important;
+            font-size: clamp(1.1rem, 2.8vw, 1.8rem) !important;
+        }
         body:not(.login-page) .card .text-muted    { color: rgba(255,255,255,0.5) !important; }
         body:not(.login-page) .card .text-success  { color: #2ecc71 !important; }
         body:not(.login-page) .card .text-primary  { color: #74b9ff !important; }
@@ -1762,20 +1783,95 @@ HTML_TEMPLATE = """
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    // canvas animations removed — backgrounds now use real photos with CSS Ken Burns
+    // ── INNER PAGE CANVAS EFFECTS — stadium atmosphere ──────────────────
     (function() {
         const canvas = document.getElementById('page-canvas');
-        if (!canvas) return; // canvas hidden via CSS, nothing to do
+        if (!canvas) return;
         const ctx = canvas.getContext('2d');
-        const cls = document.body.className;
-        const page = (cls.match(/page-(\S+)/) || [])[1];
-        if (!page) return;
-
         function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        resize();
-        window.addEventListener('resize', resize);
+        resize(); window.addEventListener('resize', resize);
 
-        // helper: dibuja un balón de fútbol (círculo + pentágonos simplificados)
+        // ── Bokeh: círculos de luz difusa (como focos de estadio desenfocados) ──
+        const bokeh = Array.from({length: 18}, () => ({
+            x: Math.random(), y: Math.random(),
+            r: Math.random() * 80 + 30,
+            vx: (Math.random() - .5) * .00015,
+            vy: (Math.random() - .5) * .0001,
+            alpha: Math.random() * .12 + .03,
+            phase: Math.random() * Math.PI * 2,
+            color: Math.random() > .5
+                ? `rgba(255,220,80,`   // dorado
+                : `rgba(180,230,255,`, // blanco-azulado (focos)
+        }));
+
+        // ── Partículas: polvo de estadio / luz ──
+        const dust = Array.from({length: 55}, () => ({
+            x: Math.random(), y: Math.random(),
+            r: Math.random() * 1.8 + .4,
+            vx: (Math.random() - .5) * .0003,
+            vy: -(Math.random() * .0004 + .0001),
+            alpha: Math.random() * .35 + .08,
+            phase: Math.random() * Math.PI * 2,
+        }));
+
+        // ── Focos rotativos (2 rayos que barren) ──
+        const spotlights = [
+            { angle: 0,     speed: .003, color: 'rgba(255,255,255,' },
+            { angle: Math.PI, speed: -.002, color: 'rgba(255,230,120,' },
+        ];
+
+        let t = 0;
+        (function tick() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const W = canvas.width, H = canvas.height;
+
+            // Focos rotativos desde arriba
+            spotlights.forEach(sp => {
+                sp.angle += sp.speed;
+                const cx = W * .5 + Math.cos(sp.angle * .7) * W * .3;
+                const targetX = W * .5 + Math.sin(sp.angle) * W * .4;
+                const targetY = H * .85;
+                const grad = ctx.createLinearGradient(cx, -20, targetX, targetY);
+                grad.addColorStop(0, sp.color + '.10)');
+                grad.addColorStop(.4, sp.color + '.04)');
+                grad.addColorStop(1, sp.color + '0)');
+                ctx.beginPath();
+                const spread = .06;
+                ctx.moveTo(cx, -20);
+                ctx.lineTo(targetX - spread * W, targetY);
+                ctx.lineTo(targetX + spread * W, targetY);
+                ctx.closePath();
+                ctx.fillStyle = grad; ctx.fill();
+            });
+
+            // Bokeh flotante
+            bokeh.forEach(b => {
+                b.x += b.vx; b.y += b.vy;
+                if (b.x < -.1) b.x = 1.1; if (b.x > 1.1) b.x = -.1;
+                if (b.y < -.1) b.y = 1.1; if (b.y > 1.1) b.y = -.1;
+                const a = b.alpha * (.5 + .5 * Math.sin(b.phase + t * .012));
+                const grad = ctx.createRadialGradient(b.x*W, b.y*H, 0, b.x*W, b.y*H, b.r);
+                grad.addColorStop(0, b.color + a + ')');
+                grad.addColorStop(1, b.color + '0)');
+                ctx.beginPath(); ctx.arc(b.x*W, b.y*H, b.r, 0, Math.PI*2);
+                ctx.fillStyle = grad; ctx.fill();
+            });
+
+            // Partículas de polvo/luz
+            dust.forEach(d => {
+                d.x += d.vx; d.y += d.vy;
+                if (d.y < -.01) { d.y = 1.01; d.x = Math.random(); }
+                if (d.x < 0) d.x = 1; if (d.x > 1) d.x = 0;
+                const a = d.alpha * (.4 + .6 * Math.sin(d.phase + t * .02));
+                ctx.beginPath(); ctx.arc(d.x*W, d.y*H, d.r, 0, Math.PI*2);
+                ctx.fillStyle = `rgba(255,255,220,${a})`; ctx.fill();
+            });
+
+            t++; requestAnimationFrame(tick);
+        })();
+    })();
+    // ── end canvas effects ──
+    /*
         function drawBall(ctx, cx, cy, r, alpha) {
             ctx.globalAlpha = alpha;
             ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
@@ -2060,7 +2156,7 @@ HTML_TEMPLATE = """
                 t++; requestAnimationFrame(tick);
             })();
         }
-    })();
+    */
     </script>
 </body>
 </html>
