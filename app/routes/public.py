@@ -971,9 +971,6 @@ HTML_TEMPLATE = """
                                 <div><strong>El cuadro real se conocerá cuando finalice la fase de grupos.</strong></div>
                             </div>
                         </div>
-                        <div class="bkt-mobile-msg d-none text-center py-3 text-muted" style="font-size:.9rem;">
-                            📱 El bracket no está disponible en móvil. Accede desde un ordenador para verlo.
-                        </div>
                         <div class="row g-2" id="matchups-r32"></div>
                     </div>
                     <hr>
@@ -1016,7 +1013,6 @@ HTML_TEMPLATE = """
         <style>
             /* ── Bracket tree ───────────────────────────────────────────────── */
             .bkt-wrap { display:flex; overflow-x:auto; justify-content:center; align-items:stretch; min-height:600px; padding:4px 0 8px; }
-            @media (max-width: 768px) { .bkt-wrap { display:none; } .bkt-mobile-msg { display:block !important; } }
             .bkt-half { display:flex; align-items:stretch; flex:0 0 auto; }
             .bkt-half-l { flex-direction:row; }
             .bkt-half-r { flex-direction:row; }
@@ -1173,23 +1169,47 @@ HTML_TEMPLATE = """
                     return `<span class="bkt-third-pill">${flag}${name}</span>`;
                 }).filter(Boolean);
 
-                cont.innerHTML = `
-                <div class="bkt-wrap">
-                    <div class="bkt-half bkt-half-l">
-                        ${r32col(MATCHUPS_R32.L,'L')}
-                        ${midcol(4)}
-                        ${midcol(2)}
-                        ${sfcol()}
+                function mobileMatch(m, path) {
+                    const cls = path === 'L' ? 'bkt-mslot-l' : 'bkt-mslot-r';
+                    return `<div class="bkt-mslot ${cls}" style="margin-bottom:6px;">${mrow(m.h)}${mrow(m.a)}</div>`;
+                }
+
+                const isMobile = window.innerWidth <= 768;
+
+                if (isMobile) {
+                    const leftMatches = MATCHUPS_R32.L.map(m => mobileMatch(m,'L')).join('');
+                    const rightMatches = MATCHUPS_R32.R.map(m => mobileMatch(m,'R')).join('');
+                    cont.innerHTML = `
+                    <div style="display:flex; gap:8px; width:100%;">
+                        <div style="flex:1;">
+                            <div class="text-center fw-bold text-success mb-2" style="font-size:.8rem;">Lado Izquierdo</div>
+                            ${leftMatches}
+                        </div>
+                        <div style="flex:1;">
+                            <div class="text-center fw-bold primary mb-2" style="font-size:.8rem; color:#0d6efd;">Lado Derecho</div>
+                            ${rightMatches}
+                        </div>
                     </div>
-                    <div class="bkt-center">🏆</div>
-                    <div class="bkt-half bkt-half-r">
-                        ${sfcol()}
-                        ${midcol(2)}
-                        ${midcol(4)}
-                        ${r32col(MATCHUPS_R32.R,'R')}
+                    ${thirds.length ? `<div class="bkt-thirds"><strong>Terceros posibles:</strong><div class="mt-2">${thirds.join('')}</div></div>` : ''}`;
+                } else {
+                    cont.innerHTML = `
+                    <div class="bkt-wrap">
+                        <div class="bkt-half bkt-half-l">
+                            ${r32col(MATCHUPS_R32.L,'L')}
+                            ${midcol(4)}
+                            ${midcol(2)}
+                            ${sfcol()}
+                        </div>
+                        <div class="bkt-center">🏆</div>
+                        <div class="bkt-half bkt-half-r">
+                            ${sfcol()}
+                            ${midcol(2)}
+                            ${midcol(4)}
+                            ${r32col(MATCHUPS_R32.R,'R')}
+                        </div>
                     </div>
-                </div>
-                ${thirds.length ? `<div class="bkt-thirds"><strong>Terceros posibles:</strong><div class="mt-2">${thirds.join('')}</div></div>` : ''}`;
+                    ${thirds.length ? `<div class="bkt-thirds"><strong>Terceros posibles:</strong><div class="mt-2">${thirds.join('')}</div></div>` : ''}`;
+                }
             }
 
             function setupFase(origenClase, destinoGrid, destinoPrefijo, maxSelect, counterId, nextSectionId, nameAttr) {
