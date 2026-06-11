@@ -247,85 +247,261 @@ HTML_TEMPLATE = """
         }
 
         /* ══════════════════════════════════════════════════════
-           INNER PAGE THEMES
+           INNER PAGE THEMES — Foto de fondo + UI dark glass
         ══════════════════════════════════════════════════════ */
+
+        /* Texto claro en páginas interiores */
+        body:not(.login-page) { color: rgba(255,255,255,0.92); }
+
+        /* Capa de foto de fondo */
         .page-bg {
             position: fixed; inset: 0; z-index: -2; pointer-events: none;
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
         }
-        #page-canvas {
-            position: fixed; inset: 0; z-index: -1; pointer-events: none;
+        /* Overlay oscuro encima de la foto */
+        .page-bg::after {
+            content: ''; position: absolute; inset: 0;
+            background: rgba(0,0,0,0.52);
         }
+        #page-canvas { display: none; }
 
-        /* Glassmorphism cards — semi-transparente para que el fondo filtre */
-        body:not(.login-page) .card {
-            background: rgba(255,255,255,0.78) !important;
-            backdrop-filter: blur(28px) saturate(1.5);
-            -webkit-backdrop-filter: blur(28px) saturate(1.5);
-            border: 1px solid rgba(255,255,255,0.6) !important;
-            box-shadow: 0 16px 48px rgba(0,0,0,0.22), 0 0 0 1px rgba(255,255,255,0.3) inset !important;
-            border-radius: 20px !important;
-        }
+        /* Animaciones Ken Burns */
+        @keyframes kb-zoom-in  { from { transform: scale(1);    } to { transform: scale(1.10); } }
+        @keyframes kb-zoom-out { from { transform: scale(1.10); } to { transform: scale(1);    } }
+        @keyframes kb-pan-r    { from { transform: scale(1.06) translateX(-2%); } to { transform: scale(1.06) translateX(2%); } }
+        @keyframes kb-pulse    { 0%,100% { filter: brightness(0.88); } 50% { filter: brightness(1.05); } }
 
-        /* Header glassmorphism */
-        body:not(.login-page) .header-banner {
-            background: rgba(6, 36, 18, 0.75) !important;
-            backdrop-filter: blur(18px) saturate(1.6);
-            -webkit-backdrop-filter: blur(18px) saturate(1.6);
-            box-shadow: 0 4px 32px rgba(0,0,0,0.35) !important;
-            border-bottom: 1px solid rgba(255,255,255,0.12);
-        }
-
-        /* Buttons upgrade */
-        body:not(.login-page) .btn-success-custom {
-            background: linear-gradient(135deg, #0f5132, #198754);
-            box-shadow: 0 4px 15px rgba(25,135,84,0.4);
-            border-radius: 10px !important;
-        }
-
-        /* ── INICIO / RANKING ── verde oscuro con toque dorado */
+        /* ── Fondos por página ── */
         body.page-inicio .page-bg {
-            background: linear-gradient(160deg, #061a0c 0%, #0c3018 40%, #0a2414 70%, #061a0c 100%);
+            background-image: url("{{ url_for('static', filename='img/bg-inicio.png') }}");
+            animation: kb-zoom-in 28s ease-out both;
         }
-
-        /* ── FASE GRUPOS ── verde campo de fútbol */
         body.page-fase_grupos .page-bg {
-            background: linear-gradient(160deg, #082010 0%, #0f3a1a 40%, #123e1c 60%, #082010 100%);
+            background-image: url("{{ url_for('static', filename='img/bg-fase-grupos.png') }}");
+            animation: kb-zoom-out 30s ease-out both;
         }
-
-        /* ── ELIMINATORIAS ── verde oscuro con brillo dorado */
         body.page-eliminatorias .page-bg {
-            background: linear-gradient(135deg, #051208 0%, #0a2410 40%, #0f2e14 70%, #051208 100%);
+            background-image: url("{{ url_for('static', filename='img/bg-eliminatorias.png') }}");
+            animation: kb-pulse 8s ease-in-out infinite;
         }
-
-        /* ── PREDICCION COMPLETA ── verde festivo */
         body.page-prediccion_completa .page-bg {
-            background: linear-gradient(135deg, #072010 0%, #0e381a 40%, #0c2e16 70%, #072010 100%);
+            background-image: url("{{ url_for('static', filename='img/bg-prediccion-completa.png') }}");
         }
-
-        /* ── VER GRUPOS ── verde noche estadio */
         body.page-ver_grupos .page-bg {
-            background: linear-gradient(160deg, #061608 0%, #0c2c12 40%, #102e16 60%, #061608 100%);
+            background-image: url("{{ url_for('static', filename='img/bg-ver-grupos.png') }}");
+            animation: kb-pan-r 25s ease-in-out alternate infinite;
         }
-
-        /* ── VER HORARIOS ── verde profundo */
         body.page-ver_horarios .page-bg,
         body.page-ver_horarios_dinamico .page-bg {
-            background: linear-gradient(135deg, #051008 0%, #0a2210 45%, #0d2a14 70%, #051008 100%);
+            background-image: url("{{ url_for('static', filename='img/bg-ver-horarios.png') }}");
+            animation: kb-zoom-out 30s ease-out both;
         }
-
-        /* ── VER PREDICCION ── verde oscuro rico */
         body.page-ver_prediccion .page-bg {
-            background: linear-gradient(135deg, #061a0c 0%, #0c3218 45%, #103620 70%, #061a0c 100%);
+            background-image: url("{{ url_for('static', filename='img/bg-ver-prediccion.png') }}");
+            animation: kb-zoom-in 28s ease-out both;
         }
-
-        /* ── NUEVO NOMBRE ── verde vibrante */
         body.page-nuevo_nombre .page-bg {
-            background: linear-gradient(160deg, #082010 0%, #0f3820 50%, #0a2814 100%);
+            background-image: url("{{ url_for('static', filename='img/bg-nuevo-nombre.png') }}");
+            animation: kb-zoom-in 28s ease-out both;
+        }
+        body.page-ver_eliminatorias .page-bg {
+            background-image: url("{{ url_for('static', filename='img/bg-ver-eliminatorias.png') }}");
+            animation: kb-zoom-in 30s ease-out both;
         }
 
-        /* ── VER ELIMINATORIAS ── verde noche profundo */
-        body.page-ver_eliminatorias .page-bg {
-            background: linear-gradient(135deg, #041008 0%, #0a2010 45%, #0e2814 70%, #041008 100%);
+        /* ══════════════════════════════════════════════════════
+           DARK GLASS UI — cards, tablas, botones, formularios
+        ══════════════════════════════════════════════════════ */
+
+        /* Header glassmorphism verde oscuro */
+        body:not(.login-page) .header-banner {
+            background: rgba(4, 20, 10, 0.72) !important;
+            backdrop-filter: blur(20px) saturate(1.6);
+            -webkit-backdrop-filter: blur(20px) saturate(1.6);
+            box-shadow: 0 4px 32px rgba(0,0,0,0.5) !important;
+            border-bottom: 1px solid rgba(255,255,255,0.10);
+        }
+
+        /* Cards dark glass */
+        body:not(.login-page) .card {
+            background: rgba(5, 18, 10, 0.68) !important;
+            backdrop-filter: blur(24px) saturate(1.5);
+            -webkit-backdrop-filter: blur(24px) saturate(1.5);
+            border: 1px solid rgba(255,255,255,0.12) !important;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.06) inset !important;
+            border-radius: 20px !important;
+            color: rgba(255,255,255,0.92) !important;
+        }
+        body:not(.login-page) .card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(46,204,113,0.6), rgba(240,192,64,0.8), rgba(46,204,113,0.6), transparent);
+            border-radius: 20px 20px 0 0;
+        }
+        body:not(.login-page) .card { position: relative; overflow: hidden; }
+
+        /* Tablas dark */
+        body:not(.login-page) .table { color: rgba(255,255,255,0.88) !important; }
+        body:not(.login-page) .table thead th,
+        body:not(.login-page) .table-custom-header {
+            background: rgba(15,81,50,0.9) !important;
+            color: #fff !important;
+            border-bottom: 2px solid rgba(46,204,113,0.4) !important;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        body:not(.login-page) .table tbody tr {
+            border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+            transition: background 0.2s;
+        }
+        body:not(.login-page) .table tbody tr:hover {
+            background: rgba(46,204,113,0.10) !important;
+        }
+        body:not(.login-page) .table td, body:not(.login-page) .table th {
+            border-color: rgba(255,255,255,0.07) !important;
+            vertical-align: middle;
+        }
+        body:not(.login-page) .table-striped>tbody>tr:nth-of-type(odd)>* {
+            background-color: rgba(255,255,255,0.04) !important;
+            color: rgba(255,255,255,0.88) !important;
+        }
+
+        /* Badges dark */
+        body:not(.login-page) .badge.bg-secondary { background: rgba(108,117,125,0.7) !important; }
+        body:not(.login-page) .badge.bg-primary   { background: rgba(13,110,253,0.8) !important; }
+        body:not(.login-page) .badge.bg-success    { background: rgba(25,135,84,0.85) !important; }
+        body:not(.login-page) .badge.bg-warning    { background: rgba(255,193,7,0.85) !important; color:#000 !important; }
+        body:not(.login-page) .badge.bg-dark       { background: rgba(33,37,41,0.9) !important; }
+
+        /* list-group dark */
+        body:not(.login-page) .list-group-item {
+            background: transparent !important;
+            border-color: rgba(255,255,255,0.10) !important;
+            color: rgba(255,255,255,0.85) !important;
+        }
+        body:not(.login-page) .list-group-item.bg-light { background: rgba(255,255,255,0.06) !important; }
+        body:not(.login-page) .list-group-item.text-dark { color: rgba(255,255,255,0.88) !important; }
+        body:not(.login-page) .list-group-item.text-success { color: #2ecc71 !important; }
+        body:not(.login-page) .list-group-item.text-secondary { color: rgba(255,255,255,0.6) !important; }
+
+        /* Botón principal */
+        body:not(.login-page) .btn-success-custom {
+            background: linear-gradient(135deg, #1a7a40 0%, #2ecc71 50%, #1a7a40 100%) !important;
+            background-size: 200% auto !important;
+            border: none !important;
+            border-radius: 12px !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.5px;
+            box-shadow: 0 6px 20px rgba(46,204,113,0.35) !important;
+            transition: background-position 0.4s, transform 0.15s, box-shadow 0.2s !important;
+            color: #fff !important;
+        }
+        body:not(.login-page) .btn-success-custom:hover:not(:disabled) {
+            background-position: right center !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 10px 28px rgba(46,204,113,0.5) !important;
+        }
+        body:not(.login-page) .btn-outline-custom {
+            color: rgba(255,255,255,0.85) !important;
+            border-color: rgba(255,255,255,0.25) !important;
+            border-radius: 12px !important;
+            background: rgba(255,255,255,0.07) !important;
+            font-weight: 600;
+        }
+        body:not(.login-page) .btn-outline-custom:hover {
+            background: rgba(255,255,255,0.15) !important;
+            color: #fff !important;
+            border-color: rgba(255,255,255,0.4) !important;
+        }
+        body:not(.login-page) .btn-secondary {
+            background: rgba(108,117,125,0.6) !important;
+            border: 1px solid rgba(255,255,255,0.15) !important;
+            border-radius: 12px !important;
+            color: #fff !important;
+        }
+
+        /* Selects y form controls dark */
+        body:not(.login-page) select,
+        body:not(.login-page) input[type="text"],
+        body:not(.login-page) input[type="number"] {
+            background: rgba(255,255,255,0.08) !important;
+            border: 1px solid rgba(255,255,255,0.18) !important;
+            border-radius: 10px !important;
+            color: #fff !important;
+            backdrop-filter: blur(4px);
+        }
+        body:not(.login-page) select:focus,
+        body:not(.login-page) input:focus {
+            border-color: rgba(46,204,113,0.6) !important;
+            box-shadow: 0 0 0 3px rgba(46,204,113,0.14) !important;
+            background: rgba(255,255,255,0.13) !important;
+            outline: none !important;
+        }
+        body:not(.login-page) select option { background: #0a2010; color: #fff; }
+
+        /* Team labels dark */
+        body:not(.login-page) .team-label {
+            background: rgba(255,255,255,0.07) !important;
+            border: 2px solid rgba(255,255,255,0.18) !important;
+            color: rgba(255,255,255,0.88) !important;
+            border-radius: 10px;
+            transition: all 0.2s;
+        }
+        body:not(.login-page) .team-checkbox:checked + .team-label {
+            border-color: #2ecc71 !important;
+            background: rgba(46,204,113,0.20) !important;
+            color: #fff !important;
+            box-shadow: 0 4px 14px rgba(46,204,113,0.30) !important;
+        }
+        body:not(.login-page) .team-checkbox:disabled + .team-label {
+            opacity: 0.35 !important;
+        }
+
+        /* Headings dentro de cards */
+        body:not(.login-page) .card h1,
+        body:not(.login-page) .card h2,
+        body:not(.login-page) .card h3,
+        body:not(.login-page) .card h4,
+        body:not(.login-page) .card h5,
+        body:not(.login-page) .card h6 { color: #fff !important; }
+        body:not(.login-page) .card .text-muted    { color: rgba(255,255,255,0.5) !important; }
+        body:not(.login-page) .card .text-success  { color: #2ecc71 !important; }
+        body:not(.login-page) .card .text-primary  { color: #74b9ff !important; }
+        body:not(.login-page) .card .text-secondary{ color: rgba(255,255,255,0.55) !important; }
+        body:not(.login-page) .card .text-dark     { color: rgba(255,255,255,0.88) !important; }
+        body:not(.login-page) .card .fw-bold       { color: inherit; }
+        body:not(.login-page) .card strong         { color: #fff; }
+
+        /* Modal dark glass */
+        body:not(.login-page) .modal-content {
+            background: rgba(5,18,10,0.90) !important;
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 1px solid rgba(255,255,255,0.12) !important;
+            color: rgba(255,255,255,0.90) !important;
+            border-radius: 20px !important;
+        }
+        body:not(.login-page) .modal-header {
+            border-bottom: 1px solid rgba(255,255,255,0.10) !important;
+        }
+        body:not(.login-page) .modal-footer {
+            border-top: 1px solid rgba(255,255,255,0.10) !important;
+        }
+        body:not(.login-page) .modal-title { color: #fff !important; }
+        body:not(.login-page) .btn-close { filter: invert(1) opacity(0.7); }
+
+        /* Puntos oro */
+        .puntos-oro { color: #f0c040 !important; text-shadow: 0 0 10px rgba(240,192,64,0.5); }
+
+        /* Nav pills en header — estilo glassmorphism */
+        body:not(.login-page) .nav-match-pill {
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.22);
+        }
+        body:not(.login-page) .nav-match-pill.live {
+            background: rgba(220,53,69,0.30);
+            border-color: rgba(220,53,69,0.55);
         }
     </style>
 </head>
@@ -1513,10 +1689,10 @@ HTML_TEMPLATE = """
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    // ── PAGE THEME CANVAS ANIMATIONS ───────────────────────────────────
+    // canvas animations removed — backgrounds now use real photos with CSS Ken Burns
     (function() {
         const canvas = document.getElementById('page-canvas');
-        if (!canvas) return;
+        if (!canvas) return; // canvas hidden via CSS, nothing to do
         const ctx = canvas.getContext('2d');
         const cls = document.body.className;
         const page = (cls.match(/page-(\S+)/) || [])[1];
