@@ -2423,6 +2423,17 @@ def _auto_sync():
             storage.save_results(existing)
         fixtures = data.get("fixtures", [])
         if fixtures:
+            existing_fix = {
+                (f.get("home", {}).get("name"), f.get("away", {}).get("name")): f
+                for f in (storage.load_fixtures() or [])
+            }
+            for f in fixtures:
+                key = (f.get("home", {}).get("name"), f.get("away", {}).get("name"))
+                old = existing_fix.get(key, {})
+                if f.get("home_score") is None and old.get("home_score") is not None:
+                    f["home_score"] = old["home_score"]
+                if f.get("away_score") is None and old.get("away_score") is not None:
+                    f["away_score"] = old["away_score"]
             storage.save_fixtures(fixtures)
         storage.set_setting("last_sync", now_utc.isoformat())
     except Exception:
@@ -3028,9 +3039,20 @@ def sync_results():
             existing = storage.load_results()
             existing.update(new_results)
             storage.save_results(existing)
-        # Save fixtures (full replace)
+        # Save fixtures — preserve existing scores if API returns null
         fixtures = data.get("fixtures", [])
         if fixtures:
+            existing_fixtures = {
+                (f.get("home", {}).get("name"), f.get("away", {}).get("name")): f
+                for f in (storage.load_fixtures() or [])
+            }
+            for f in fixtures:
+                key = (f.get("home", {}).get("name"), f.get("away", {}).get("name"))
+                old = existing_fixtures.get(key, {})
+                if f.get("home_score") is None and old.get("home_score") is not None:
+                    f["home_score"] = old["home_score"]
+                if f.get("away_score") is None and old.get("away_score") is not None:
+                    f["away_score"] = old["away_score"]
             storage.save_fixtures(fixtures)
         return {
             "status": "ok",
