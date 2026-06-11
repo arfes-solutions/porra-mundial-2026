@@ -3046,6 +3046,15 @@ def health():
     return {"status": "ok"}
 
 
+@public_bp.route("/debug/stored")
+def debug_stored():
+    """Show what's actually stored in Supabase for finished matches."""
+    storage = get_storage()
+    fixtures = storage.load_fixtures()
+    finished = [f for f in fixtures if f.get("is_finished") or f.get("status") in ("FINISHED", "AWARDED")]
+    return {"total": len(fixtures), "finished": finished}
+
+
 @public_bp.route("/debug/fixtures")
 def debug_fixtures():
     """Show raw fixture data for finished matches to diagnose score issues."""
