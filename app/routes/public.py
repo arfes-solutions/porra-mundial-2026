@@ -503,6 +503,76 @@ HTML_TEMPLATE = """
             background: rgba(220,53,69,0.30);
             border-color: rgba(220,53,69,0.55);
         }
+
+        /* ══ OVERRIDE FORZADO: eliminar todos los fondos blancos ══ */
+        body:not(.login-page) .bg-light,
+        body:not(.login-page) .bg-white,
+        body:not(.login-page) .card.bg-light,
+        body:not(.login-page) .card-body.bg-light {
+            background: rgba(255,255,255,0.06) !important;
+            color: rgba(255,255,255,0.88) !important;
+        }
+        body:not(.login-page) .bg-white {
+            background: rgba(255,255,255,0.07) !important;
+        }
+        /* Filas y celdas de tablas — transparentes */
+        body:not(.login-page) .table,
+        body:not(.login-page) .table-responsive,
+        body:not(.login-page) .table > :not(caption) > * > *,
+        body:not(.login-page) .table tbody,
+        body:not(.login-page) .table tbody tr,
+        body:not(.login-page) .table tbody td,
+        body:not(.login-page) .table tbody th {
+            background-color: transparent !important;
+            color: rgba(255,255,255,0.88) !important;
+            border-color: rgba(255,255,255,0.08) !important;
+        }
+        body:not(.login-page) .table tbody tr:hover > td,
+        body:not(.login-page) .table tbody tr:hover > th {
+            background-color: rgba(46,204,113,0.10) !important;
+        }
+        /* Items de partido / equipo con fondo blanco en horarios y grupos */
+        body:not(.login-page) .rounded.bg-white,
+        body:not(.login-page) .rounded.border,
+        body:not(.login-page) [class*="bg-white"],
+        body:not(.login-page) .shadow-sm.bg-white,
+        body:not(.login-page) .shadow-sm.border.rounded {
+            background: rgba(255,255,255,0.07) !important;
+            border-color: rgba(255,255,255,0.12) !important;
+            color: rgba(255,255,255,0.88) !important;
+        }
+        /* Botón Cancelar y todos btn-light en páginas interiores */
+        body:not(.login-page) .btn-light,
+        body:not(.login-page) .btn.btn-light {
+            background: rgba(255,255,255,0.10) !important;
+            border: 1px solid rgba(255,255,255,0.22) !important;
+            color: rgba(255,255,255,0.80) !important;
+            border-radius: 12px !important;
+        }
+        body:not(.login-page) .btn-light:hover {
+            background: rgba(255,255,255,0.20) !important;
+            color: #fff !important;
+        }
+        /* Botones de nav (Inicio, Reglas, Grupos, Horarios) — mantener estilo */
+        body:not(.login-page) .header-banner .btn-light {
+            background: rgba(255,255,255,0.92) !important;
+            color: #0f5132 !important;
+            border: none !important;
+        }
+        body:not(.login-page) .header-banner .btn-light:hover {
+            background: #fff !important;
+            color: #0f5132 !important;
+        }
+        /* badge bg-light */
+        body:not(.login-page) .badge.bg-light {
+            background: rgba(255,255,255,0.15) !important;
+            color: rgba(255,255,255,0.7) !important;
+        }
+        /* text colors genéricos que quedan oscuros */
+        body:not(.login-page) .text-muted  { color: rgba(255,255,255,0.50) !important; }
+        body:not(.login-page) .text-dark   { color: rgba(255,255,255,0.88) !important; }
+        body:not(.login-page) .text-black  { color: #fff !important; }
+        body:not(.login-page) p, body:not(.login-page) span, body:not(.login-page) small { color: inherit; }
     </style>
 </head>
 <body class="{% if vista == 'login_register' %}login-page{% else %}page-{{ vista }}{% endif %}">
