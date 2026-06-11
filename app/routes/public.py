@@ -670,7 +670,7 @@ HTML_TEMPLATE = """
                 <span class="badge bg-danger">🔴 EN VIVO</span>
                 <span class="fw-bold">
                     {% if m.home.flag %}<img src="https://flagcdn.com/w20/{{ m.home.flag }}.png" width="18" class="me-1">{% endif %}
-                    {{ m.home.name }} <span class="text-warning mx-2">{{ m.home_score }}-{{ m.away_score }}</span> {{ m.away.name }}
+                    {{ m.home.name }} <span class="text-warning mx-2">{{ m.home_score if m.home_score is not none else '-' }}-{{ m.away_score if m.away_score is not none else '-' }}</span> {{ m.away.name }}
                     {% if m.away.flag %}<img src="https://flagcdn.com/w20/{{ m.away.flag }}.png" width="18" class="ms-1">{% endif %}
                 </span>
             </div>
@@ -941,7 +941,7 @@ HTML_TEMPLATE = """
                                 </div>
                                 <div class="text-center fw-bold fs-5" style="width:20%;">
                                     {% if p.is_finished or p.is_live %}
-                                        <span class="text-success">{{ p.home_score }} - {{ p.away_score }}</span>
+                                        <span class="text-success">{{ p.home_score if p.home_score is not none else '-' }} - {{ p.away_score if p.away_score is not none else '-' }}</span>
                                     {% else %}
                                         <span class="text-muted">vs</span>
                                     {% endif %}
@@ -1023,7 +1023,7 @@ HTML_TEMPLATE = """
                                         </div>
                                         <div class="text-center fw-bold" style="width:20%;">
                                             {% if p.is_finished or p.is_live %}
-                                            <span class="text-success fs-5">{{ p.home_score }} - {{ p.away_score }}</span>
+                                            <span class="text-success fs-5">{{ p.home_score if p.home_score is not none else '-' }} - {{ p.away_score if p.away_score is not none else '-' }}</span>
                                             {% else %}
                                             <span class="text-secondary">vs</span>
                                             {% endif %}
