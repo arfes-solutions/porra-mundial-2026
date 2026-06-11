@@ -241,7 +241,8 @@ def fetch_all(api_key: str) -> dict:
         for standing in r.json().get("standings", []):
             if standing.get("type") != "TOTAL":
                 continue
-            letter = standing.get("group", "").replace("GROUP_", "")
+            raw_group = standing.get("group", "")
+            letter = raw_group.replace("GROUP_", "").replace("Group ", "").strip()
             if not letter or len(letter) != 1:
                 continue
             for row in standing.get("table", []):
