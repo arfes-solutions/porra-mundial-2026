@@ -39,8 +39,9 @@ HTML_TEMPLATE = """
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Poppins', sans-serif; background-color: #f2f9f5; color: #2c3e50; padding-top: 110px; }
+        body { font-family: 'Poppins', sans-serif; background-color: transparent; color: #2c3e50; padding-top: 110px; }
         body.login-page { background-color: #000; padding-top: 0; overflow: hidden; }
+        body:not(.login-page) { background: transparent; }
         .header-banner {
             position: fixed; top: 0; left: 0; right: 0; z-index: 1050;
             background: linear-gradient(135deg, #0f5132 0%, #198754 100%);
@@ -244,9 +245,95 @@ HTML_TEMPLATE = """
             .lp-card { padding:36px 24px 32px; }
             .lp-right-deco { display:none; }
         }
+
+        /* ══════════════════════════════════════════════════════
+           INNER PAGE THEMES
+        ══════════════════════════════════════════════════════ */
+        .page-bg {
+            position: fixed; inset: 0; z-index: -2; pointer-events: none;
+        }
+        #page-canvas {
+            position: fixed; inset: 0; z-index: -1; pointer-events: none;
+        }
+
+        /* Glassmorphism cards */
+        body:not(.login-page) .card {
+            background: rgba(255,255,255,0.92) !important;
+            backdrop-filter: blur(22px) saturate(1.2);
+            -webkit-backdrop-filter: blur(22px) saturate(1.2);
+            border: 1px solid rgba(255,255,255,0.55) !important;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.38), 0 0 0 1px rgba(255,255,255,0.18) inset !important;
+            border-radius: 20px !important;
+        }
+
+        /* Header glassmorphism */
+        body:not(.login-page) .header-banner {
+            background: rgba(6, 36, 18, 0.82) !important;
+            backdrop-filter: blur(16px) saturate(1.4);
+            -webkit-backdrop-filter: blur(16px) saturate(1.4);
+            box-shadow: 0 4px 32px rgba(0,0,0,0.5) !important;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+
+        /* Buttons upgrade */
+        body:not(.login-page) .btn-success-custom {
+            background: linear-gradient(135deg, #0f5132, #198754);
+            box-shadow: 0 4px 15px rgba(25,135,84,0.4);
+            border-radius: 10px !important;
+        }
+
+        /* ── INICIO / RANKING ── oscuro dorado */
+        body.page-inicio .page-bg {
+            background: radial-gradient(ellipse at 15% 10%, #1a1000 0%, #080500 55%, #000 100%);
+        }
+
+        /* ── FASE GRUPOS ── campo oscuro */
+        body.page-fase_grupos .page-bg {
+            background: linear-gradient(180deg, #010903 0%, #041508 60%, #010903 100%);
+        }
+
+        /* ── ELIMINATORIAS ── rayos dorados */
+        body.page-eliminatorias .page-bg {
+            background: radial-gradient(ellipse at 50% 110%, #1c0d00 0%, #090400 60%, #000 100%);
+        }
+
+        /* ── PREDICCION COMPLETA ── celebración */
+        body.page-prediccion_completa .page-bg {
+            background: radial-gradient(ellipse at 50% 50%, #0a180a 0%, #030803 100%);
+        }
+
+        /* ── VER GRUPOS ── estadio azul */
+        body.page-ver_grupos .page-bg {
+            background: linear-gradient(160deg, #010610 0%, #030c1e 55%, #010610 100%);
+        }
+
+        /* ── VER HORARIOS ── led neón */
+        body.page-ver_horarios .page-bg,
+        body.page-ver_horarios_dinamico .page-bg {
+            background: #000810;
+        }
+
+        /* ── VER PREDICCION ── mármol oscuro */
+        body.page-ver_prediccion .page-bg {
+            background: linear-gradient(135deg, #08080f 0%, #0e0c16 55%, #08080f 100%);
+        }
+
+        /* ── NUEVO NOMBRE ── verde minimal */
+        body.page-nuevo_nombre .page-bg {
+            background: linear-gradient(160deg, #010803 0%, #04100a 100%);
+        }
+
+        /* ── VER ELIMINATORIAS ── cosmos */
+        body.page-ver_eliminatorias .page-bg {
+            background: radial-gradient(ellipse at 50% 0%, #08041e 0%, #020108 100%);
+        }
     </style>
 </head>
-<body {% if vista == 'login_register' %}class="login-page"{% endif %}>
+<body class="{% if vista == 'login_register' %}login-page{% else %}page-{{ vista }}{% endif %}">
+    {% if vista != 'login_register' %}
+    <div class="page-bg"></div>
+    <canvas id="page-canvas"></canvas>
+    {% endif %}
     <div class="header-banner">
         <div class="mx-auto" style="max-width:1400px;">
 
@@ -1425,6 +1512,230 @@ HTML_TEMPLATE = """
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    // ── PAGE THEME CANVAS ANIMATIONS ───────────────────────────────────
+    (function() {
+        const canvas = document.getElementById('page-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const cls = document.body.className;
+        const page = (cls.match(/page-(\S+)/) || [])[1];
+        if (!page) return;
+
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        resize();
+        window.addEventListener('resize', resize);
+
+        // ── INICIO: partículas doradas flotando ──
+        if (page === 'inicio') {
+            const P = Array.from({length:70}, () => ({
+                x: Math.random(), y: Math.random(),
+                r: Math.random()*2+0.5,
+                vx: (Math.random()-.5)*.3, vy: -(Math.random()*.5+.1),
+                alpha: Math.random()*.5+.15,
+                color: Math.random()>.4 ? '#f0c040' : '#ffe8a0',
+                phase: Math.random()*Math.PI*2,
+            }));
+            let t=0;
+            (function tick(){
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                P.forEach(p => {
+                    p.x += p.vx/canvas.width; p.y += p.vy/canvas.height;
+                    if(p.y<-.01){p.y=1.01;p.x=Math.random();}
+                    if(p.x<0)p.x=1; if(p.x>1)p.x=0;
+                    const a = p.alpha*(0.6+0.4*Math.sin(p.phase+t*.02));
+                    ctx.beginPath();
+                    ctx.arc(p.x*canvas.width, p.y*canvas.height, p.r, 0, Math.PI*2);
+                    ctx.fillStyle = p.color; ctx.globalAlpha = a; ctx.fill();
+                });
+                ctx.globalAlpha=1; t++;
+                requestAnimationFrame(tick);
+            })();
+        }
+
+        // ── FASE_GRUPOS: líneas de campo pulsantes ──
+        else if (page === 'fase_grupos') {
+            let t=0;
+            (function tick(){
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                const W=canvas.width,H=canvas.height;
+                const a = 0.05+0.025*Math.sin(t*.008);
+                ctx.strokeStyle=`rgba(255,255,255,${a})`; ctx.lineWidth=1.5;
+                ctx.beginPath(); ctx.moveTo(W/2,0); ctx.lineTo(W/2,H); ctx.stroke();
+                ctx.beginPath(); ctx.arc(W/2,H/2,Math.min(W,H)*.14,0,Math.PI*2); ctx.stroke();
+                ctx.strokeRect(W*.06,H*.06,W*.88,H*.88);
+                ctx.strokeRect(W*.06,H*.28,W*.16,H*.44);
+                ctx.strokeRect(W*.78,H*.28,W*.16,H*.44);
+                ctx.beginPath(); ctx.arc(W/2,H/2,4,0,Math.PI*2);
+                ctx.fillStyle=`rgba(255,255,255,${a*2})`; ctx.fill();
+                t++; requestAnimationFrame(tick);
+            })();
+        }
+
+        // ── ELIMINATORIAS: rayos dorados desde abajo ──
+        else if (page === 'eliminatorias') {
+            let t=0;
+            (function tick(){
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                const W=canvas.width,H=canvas.height,cx=W/2,cy=H*1.1;
+                for(let i=0;i<14;i++){
+                    const angle = (i/14)*Math.PI - Math.PI/2 + t*.001;
+                    const a = (0.04+0.025*Math.sin(t*.025+i))*(i%2===0?1.4:.7);
+                    const spread = Math.PI/14*.6;
+                    const gx = cx+Math.cos(angle)*H*1.5, gy = cy+Math.sin(angle)*H*1.5;
+                    const grad = ctx.createLinearGradient(cx,cy,gx,gy);
+                    grad.addColorStop(0,`rgba(240,170,20,${a*2.5})`);
+                    grad.addColorStop(1,'rgba(240,170,20,0)');
+                    ctx.beginPath();
+                    ctx.moveTo(cx,cy);
+                    ctx.arc(cx,cy,H*1.8,angle-spread,angle+spread);
+                    ctx.closePath();
+                    ctx.fillStyle=grad; ctx.fill();
+                }
+                t++; requestAnimationFrame(tick);
+            })();
+        }
+
+        // ── PREDICCION_COMPLETA: confeti festivo ──
+        else if (page === 'prediccion_completa') {
+            const pieces = Array.from({length:90}, () => ({
+                x:Math.random()*1, y:Math.random()*1,
+                vx:(Math.random()-.5)*.004, vy:Math.random()*.006+.002,
+                size:Math.random()*7+3, angle:Math.random()*Math.PI*2,
+                spin:(Math.random()-.5)*.06,
+                color:`hsl(${Math.floor(Math.random()*360)},85%,62%)`,
+                alpha:Math.random()*.45+.2,
+            }));
+            (function tick(){
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                const W=canvas.width,H=canvas.height;
+                pieces.forEach(p => {
+                    p.x+=p.vx; p.y+=p.vy; p.angle+=p.spin;
+                    if(p.y>1.02){p.y=-.02;p.x=Math.random();}
+                    ctx.save();
+                    ctx.translate(p.x*W,p.y*H); ctx.rotate(p.angle);
+                    ctx.globalAlpha=p.alpha; ctx.fillStyle=p.color;
+                    ctx.fillRect(-p.size/2,-p.size/4,p.size,p.size/3);
+                    ctx.restore();
+                });
+                ctx.globalAlpha=1; requestAnimationFrame(tick);
+            })();
+        }
+
+        // ── VER_GRUPOS: público del estadio ──
+        else if (page === 'ver_grupos') {
+            const dots = Array.from({length:220}, () => ({
+                x:Math.random(), y:Math.random()*.7+.1,
+                r:Math.random()*1.8+.8,
+                hue:Math.floor(Math.random()*360),
+                alpha:Math.random()*.12+.04,
+                phase:Math.random()*Math.PI*2,
+            }));
+            let t=0;
+            (function tick(){
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                const W=canvas.width,H=canvas.height;
+                dots.forEach(d => {
+                    const a=d.alpha*(0.5+0.5*Math.sin(d.phase+t*.018));
+                    ctx.beginPath(); ctx.arc(d.x*W,d.y*H,d.r,0,Math.PI*2);
+                    ctx.fillStyle=`hsla(${d.hue},75%,65%,${a})`; ctx.fill();
+                });
+                t++; requestAnimationFrame(tick);
+            })();
+        }
+
+        // ── VER_HORARIOS: cuadrícula LED + scanline ──
+        else if (page === 'ver_horarios' || page === 'ver_horarios_dinamico') {
+            let t=0;
+            (function tick(){
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                const W=canvas.width,H=canvas.height,sp=32;
+                ctx.strokeStyle='rgba(0,255,100,0.04)'; ctx.lineWidth=1;
+                for(let x=0;x<W;x+=sp){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+                for(let y=0;y<H;y+=sp){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+                const sy=(t*1.5)%H;
+                const g=ctx.createLinearGradient(0,sy-50,0,sy+50);
+                g.addColorStop(0,'rgba(0,255,100,0)');
+                g.addColorStop(.5,'rgba(0,255,100,0.07)');
+                g.addColorStop(1,'rgba(0,255,100,0)');
+                ctx.fillStyle=g; ctx.fillRect(0,sy-50,W,100);
+                t++; requestAnimationFrame(tick);
+            })();
+        }
+
+        // ── VER_PREDICCION: venas de mármol dorado ──
+        else if (page === 'ver_prediccion') {
+            const veins = Array.from({length:6}, () => {
+                const pts = Array.from({length:7}, () => ({x:Math.random(),y:Math.random()}));
+                return {pts, alpha:Math.random()*.06+.02};
+            });
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            const W=canvas.width,H=canvas.height;
+            veins.forEach(v => {
+                ctx.beginPath();
+                ctx.moveTo(v.pts[0].x*W,v.pts[0].y*H);
+                for(let i=1;i<v.pts.length-1;i++){
+                    const mx=(v.pts[i].x+v.pts[i+1].x)/2, my=(v.pts[i].y+v.pts[i+1].y)/2;
+                    ctx.quadraticCurveTo(v.pts[i].x*W,v.pts[i].y*H,mx*W,my*H);
+                }
+                ctx.strokeStyle=`rgba(200,160,40,${v.alpha})`; ctx.lineWidth=1.5; ctx.stroke();
+            });
+            // redraw on resize
+            window.addEventListener('resize', () => {
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                veins.forEach(v => {
+                    ctx.beginPath(); ctx.moveTo(v.pts[0].x*canvas.width,v.pts[0].y*canvas.height);
+                    for(let i=1;i<v.pts.length-1;i++){
+                        const mx=(v.pts[i].x+v.pts[i+1].x)/2, my=(v.pts[i].y+v.pts[i+1].y)/2;
+                        ctx.quadraticCurveTo(v.pts[i].x*canvas.width,v.pts[i].y*canvas.height,mx*canvas.width,my*canvas.height);
+                    }
+                    ctx.strokeStyle=`rgba(200,160,40,${v.alpha})`; ctx.lineWidth=1.5; ctx.stroke();
+                });
+            });
+        }
+
+        // ── VER_ELIMINATORIAS: cosmos estrellado ──
+        else if (page === 'ver_eliminatorias') {
+            const stars = Array.from({length:160}, () => ({
+                x:Math.random(), y:Math.random(),
+                r:Math.random()*1.4+.3,
+                alpha:Math.random()*.55+.1,
+                phase:Math.random()*Math.PI*2,
+            }));
+            let t=0;
+            (function tick(){
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                const W=canvas.width,H=canvas.height;
+                stars.forEach(s => {
+                    const a=s.alpha*(0.55+0.45*Math.sin(s.phase+t*.012));
+                    ctx.beginPath(); ctx.arc(s.x*W,s.y*H,s.r,0,Math.PI*2);
+                    ctx.fillStyle=`rgba(190,170,255,${a})`; ctx.fill();
+                });
+                t++; requestAnimationFrame(tick);
+            })();
+        }
+
+        // ── NUEVO_NOMBRE: destellos verdes sutiles ──
+        else if (page === 'nuevo_nombre') {
+            const sparks = Array.from({length:30}, () => ({
+                x:Math.random(), y:Math.random(),
+                r:Math.random()*1.5+.5, alpha:Math.random()*.2+.05,
+                phase:Math.random()*Math.PI*2,
+            }));
+            let t=0;
+            (function tick(){
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                const W=canvas.width,H=canvas.height;
+                sparks.forEach(s => {
+                    const a=s.alpha*(0.4+0.6*Math.sin(s.phase+t*.015));
+                    ctx.beginPath(); ctx.arc(s.x*W,s.y*H,s.r,0,Math.PI*2);
+                    ctx.fillStyle=`rgba(46,204,113,${a})`; ctx.fill();
+                });
+                t++; requestAnimationFrame(tick);
+            })();
+        }
+    })();
+    </script>
 </body>
 </html>
 """
