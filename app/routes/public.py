@@ -439,6 +439,9 @@ HTML_TEMPLATE = """
             outline: none !important;
         }
         body:not(.login-page) select option { background: #0a2010; color: #fff; }
+        body:not(.login-page) input::placeholder { color: rgba(255,255,255,0.40) !important; }
+        body:not(.login-page) input::-webkit-input-placeholder { color: rgba(255,255,255,0.40) !important; }
+        body:not(.login-page) input::-moz-placeholder { color: rgba(255,255,255,0.40) !important; }
 
         /* Team labels dark */
         body:not(.login-page) .team-label {
