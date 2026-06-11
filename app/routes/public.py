@@ -971,6 +971,9 @@ HTML_TEMPLATE = """
                                 <div><strong>El cuadro real se conocerá cuando finalice la fase de grupos.</strong></div>
                             </div>
                         </div>
+                        <div class="bkt-mobile-msg d-none text-center py-3 text-muted" style="font-size:.9rem;">
+                            📱 El bracket no está disponible en móvil. Accede desde un ordenador para verlo.
+                        </div>
                         <div class="row g-2" id="matchups-r32"></div>
                     </div>
                     <hr>
@@ -1013,6 +1016,7 @@ HTML_TEMPLATE = """
         <style>
             /* ── Bracket tree ───────────────────────────────────────────────── */
             .bkt-wrap { display:flex; overflow-x:auto; justify-content:center; align-items:stretch; min-height:600px; padding:4px 0 8px; }
+            @media (max-width: 768px) { .bkt-wrap { display:none; } .bkt-mobile-msg { display:block !important; } }
             .bkt-half { display:flex; align-items:stretch; flex:0 0 auto; }
             .bkt-half-l { flex-direction:row; }
             .bkt-half-r { flex-direction:row; }
