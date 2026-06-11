@@ -1,0 +1,51 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Entrada - Porra Mundial 2026{% endblock %}
+
+{% block content %}
+<section class="welcome-shell">
+  <div class="welcome-hero">
+    <p class="eyebrow"></p>
+    <h1>Porra Mundial 2026</h1>
+    <p class="lead">
+      Entra con tu nombre para ver tu porra o regÃ­strate para empezar la predicciÃ³n.
+    </p>
+  </div>
+
+  <div class="auth-grid">
+    <form class="auth-panel" method="post" action="{{ url_for('public.login') }}">
+      <div>
+        <p class="eyebrow">Acceso</p>
+        <h2>Ya participo</h2>
+      </div>
+      <label for="login-name">Nombre</label>
+      <input id="login-name" name="name" type="text" autocomplete="name" required>
+      {% if login_error %}
+        <p class="form-error">{{ login_error }}</p>
+      {% endif %}
+      <button class="button button-wide" type="submit">Entrar</button>
+    </form>
+
+    <form class="auth-panel auth-panel-accent" method="post" action="{{ url_for('public.register') }}">
+      <div>
+        <p class="eyebrow">Registro</p>
+        <h2>Nuevo participante</h2>
+      </div>
+      <label for="register-name">Nombre</label>
+      <input
+        id="register-name"
+        name="name"
+        type="text"
+        autocomplete="name"
+        value="{{ suggested_name or '' }}"
+        required
+      >
+      {% if register_error %}
+        <p class="form-error">{{ register_error }}</p>
+      {% endif %}
+      <button class="button button-wide" type="submit">Registrarme</button>
+    </form>
+  </div>
+</section>
+{% endblock %}
+

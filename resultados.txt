@@ -1,0 +1,16 @@
+# ========================================================
+# ARCHIVO GENERADO AUTOMÁTICAMENTE POR EL PANEL DE ADMIN
+# ========================================================
+
+# --- FASE DE GRUPOS ---
+
+# --- ELIMINATORIAS ---
+octavos: 
+cuartos: 
+semis: 
+final: 
+campeon: 
+subcampeon: 
+
+# --- EXTRAS ---
+pichichi: 

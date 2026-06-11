@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Ranking - Porra Mundial 2026{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+  <div class="hero-panel">
+    <div>
+      <p class="eyebrow">Mundial 2026</p>
+      <h1>La porra que se mira cada mañana.</h1>
+      <p class="lead">
+        Ranking, predicciones y estado del torneo en una base nueva y lista para evolucionar.
+      </p>
+    </div>
+    <div class="hero-stats" aria-label="Resumen de la porra">
+      <div>
+        <span>{{ participants|length }}</span>
+        <small>participantes</small>
+      </div>
+      <div>
+        <span>{{ standings[0].points if standings else 0 }}</span>
+        <small>puntos lider</small>
+      </div>
+      <div>
+        <span>{{ groups|length }}</span>
+        <small>grupos</small>
+      </div>
+    </div>
+  </div>
+
+  <section class="section-grid">
+    <article class="panel ranking-panel">
+      <div class="panel-heading">
+        <div>
+          <p class="eyebrow">Clasificación</p>
+          <h2>Ranking general</h2>
+        </div>
+        <a class="button" href="{{ url_for('public.welcome') }}">Participar</a>
+      </div>
+
+      {% if standings %}
+        <ol class="ranking-list">
+          {% for row in standings %}
+            <li>
+              <span class="rank">{{ loop.index }}</span>
+              <span class="player">{{ row.name }}</span>
+              <span class="points">{{ row.points }} pts</span>
+            </li>
+          {% endfor %}
+        </ol>
+      {% else %}
+        <div class="empty-state">
+          <strong>Todavía no hay participantes.</strong>
+          <span>Regístrate para abrir la clasificación.</span>
+        </div>
+      {% endif %}
+    </article>
+
+    <aside class="panel" id="reglas">
+      <p class="eyebrow">Reglas base</p>
+      <h2>Puntuación</h2>
+      <ul class="rules-list">
+        <li><span>Grupos</span><strong>1 + 1</strong></li>
+        <li><span>Octavos</span><strong>3</strong></li>
+        <li><span>Cuartos</span><strong>5</strong></li>
+        <li><span>Semis</span><strong>8</strong></li>
+        <li><span>Finalistas</span><strong>12</strong></li>
+        <li><span>Campeón</span><strong>20</strong></li>
+        <li><span>Subcampeón</span><strong>10</strong></li>
+        <li><span>Pichichi</span><strong>7</strong></li>
+      </ul>
+    </aside>
+  </section>
+
+  <section class="panel groups-panel" id="grupos">
+    <div class="panel-heading">
+      <div>
+        <p class="eyebrow">Torneo</p>
+        <h2>Grupos oficiales</h2>
+      </div>
+    </div>
+
+    <div class="groups-grid">
+      {% for letter, team_ids in groups.items() %}
+        <article class="group-card">
+          <h3>Grupo {{ letter }}</h3>
+          <ul>
+            {% for team_id in team_ids %}
+              <li>
+                <span>{{ teams[team_id].name }}</span>
+                <small>{{ team_id }}</small>
+              </li>
+            {% endfor %}
+          </ul>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+</section>
+{% endblock %}
