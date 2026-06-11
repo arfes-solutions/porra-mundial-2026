@@ -1393,18 +1393,6 @@ HTML_TEMPLATE = """
                         <li class="list-group-item d-flex justify-content-between align-items-center px-0 bg-light fw-bold text-dark">⚽ Acertar el Pichichi (Máximo Goleador)<span class="badge bg-dark rounded-pill">+7 pts</span></li>
                     </ul>
                 </div>
-                <div class="modal-body pt-0 px-4 pb-4">
-                    <div style="background:#fffbe6; border:1px solid #f0c040; border-radius:10px; padding:16px 20px;">
-                        <h6 class="fw-bold mb-3" style="color:#b8860b;">💰 Premios</h6>
-                        <ul class="list-group list-group-flush small mb-3">
-                            <li class="list-group-item d-flex justify-content-between align-items-center px-0" style="background:transparent;">🥇 1º puesto<span class="badge rounded-pill fw-bold" style="background:#f6d365;color:#7a5c00;">250 €</span></li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center px-0" style="background:transparent;">🥈 2º puesto<span class="badge rounded-pill fw-bold" style="background:#d0d0d0;color:#444;">100 €</span></li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center px-0" style="background:transparent;">🥉 3º puesto<span class="badge rounded-pill fw-bold" style="background:#e8a87c;color:#6b3a1f;">50 €</span></li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center px-0" style="background:transparent;">4º puesto<span class="badge rounded-pill fw-bold bg-secondary">20 €</span></li>
-                        </ul>
-                        <p class="mb-0 text-muted small" style="font-style:italic;">En caso de empate, la suma de los premios correspondientes se repartirá en partes iguales entre las personas empatadas.</p>
-                    </div>
-                </div>
                 <div class="modal-footer border-0 pt-0">
                     <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Entendido</button>
                 </div>
@@ -1584,7 +1572,7 @@ def welcome():
     return _render_ranking()
 
 
-SHARED_USERNAME = "porra2026"
+SHARED_USERNAME = "Mundial26"
 SHARED_PASSWORD = "Mundial26"
 ADMIN_USERNAME = "Admin"
 ADMIN_PASSWORD = "porra2026admin"
