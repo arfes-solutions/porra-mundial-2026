@@ -687,7 +687,7 @@ HTML_TEMPLATE = """
                 {% if not puntos_activos %}
                 <div class="alert d-flex align-items-center gap-2 mb-4" style="background:rgba(255,193,7,0.15);border:1px solid rgba(255,193,7,0.4);border-radius:10px;color:#ffe082;">
                     <span style="font-size:1.3rem;">⏳</span>
-                    <span>Los puntos empezarán a actualizarse cuando se haya jugado al menos un partido en todos los grupos.</span>
+                    <span>Los puntos empezarán a actualizarse cuando todos los equipos hayan jugado su primer partido.</span>
                 </div>
                 {% endif %}
                 <div class="table-responsive">
