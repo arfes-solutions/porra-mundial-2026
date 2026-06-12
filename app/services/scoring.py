@@ -12,15 +12,15 @@ TOP_SCORER_POINTS = 7
 
 
 def calculate_points(prediction, results):
+    # No points until all teams have played their first match
+    if not results.get("jornada_1_complete"):
+        return 0
+
     points = 0
     group_predictions = prediction.get("grupos", {})
     knockout_predictions = prediction.get("eliminatorias", {})
 
     for letter in "ABCDEFGHIJKL":
-        # Only count group points when that specific group has finished all its matches
-        if not results.get(f"g_{letter.lower()}_complete"):
-            continue
-
         actual_positions = [
             results.get(f"g_{letter.lower()}_1"),
             results.get(f"g_{letter.lower()}_2"),
@@ -40,22 +40,18 @@ def calculate_points(prediction, results):
                 points += GROUP_POINTS_EXACT_POSITION
 
     for round_name, round_points in KNOCKOUT_POINTS.items():
-        # Only count knockout points when that round is fully complete
-        if not results.get(f"{round_name}_complete"):
-            continue
         actual_teams = set(results.get(round_name, []))
         for predicted in knockout_predictions.get(round_name, []):
             if predicted in actual_teams:
                 points += round_points
 
-    if results.get("final_complete"):
-        champion = knockout_predictions.get("campeon")
-        if champion and champion == results.get("campeon"):
-            points += CHAMPION_POINTS
+    champion = knockout_predictions.get("campeon")
+    if champion and champion == results.get("campeon"):
+        points += CHAMPION_POINTS
 
-        runner_up = knockout_predictions.get("subcampeon")
-        if runner_up and runner_up == results.get("subcampeon"):
-            points += RUNNER_UP_POINTS
+    runner_up = knockout_predictions.get("subcampeon")
+    if runner_up and runner_up == results.get("subcampeon"):
+        points += RUNNER_UP_POINTS
 
     top_scorer = knockout_predictions.get("pichichi", "").strip().lower()
     if top_scorer and top_scorer in results.get("pichichi", []):
