@@ -684,6 +684,12 @@ HTML_TEMPLATE = """
                     <h3 class="card-title m-0 fw-bold text-success">Clasificación General</h3>
                     <a href="{{ url_for('public.nueva_prediccion') }}" class="btn btn-success-custom text-white fw-bold px-4 py-2">➕ Añadir predicción</a>
                 </div>
+                {% if not puntos_activos %}
+                <div class="alert d-flex align-items-center gap-2 mb-4" style="background:rgba(255,193,7,0.15);border:1px solid rgba(255,193,7,0.4);border-radius:10px;color:#ffe082;">
+                    <span style="font-size:1.3rem;">⏳</span>
+                    <span>Los puntos empezarán a actualizarse cuando se haya jugado al menos un partido en todos los grupos.</span>
+                </div>
+                {% endif %}
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
                         <thead class="table-custom-header">
@@ -2452,6 +2458,7 @@ def _render_ranking():
         participants, results, fixtures = {}, {}, []
     _auto_sync()  # sync after reading so it doesn't race with our data load
 
+    puntos_activos = bool(results.get("jornada_1_complete"))
     standings = build_standings(participants, results)
     try:
         all_p = get_storage().load_participants_full()
@@ -2485,7 +2492,8 @@ def _render_ranking():
     next_match = scheduled[0][1] if scheduled else None
 
     return _render("inicio", clasificacion=standings,
-                   live_matches=live_matches, next_match=next_match)
+                   live_matches=live_matches, next_match=next_match,
+                   puntos_activos=puntos_activos)
 
 
 @public_bp.route("/ranking")
