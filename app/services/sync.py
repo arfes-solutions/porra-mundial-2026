@@ -235,11 +235,12 @@ def fetch_all(api_key: str) -> dict:
         if runner_up:
             results["subcampeon"] = runner_up
 
-        # jornada_1_complete = all 12 groups have at least 1 finished matchday-1 match
+        # jornada_1_complete = all 12 groups have finished ALL their matchday-1 matches
+        # (2 matches per group = all 4 teams in each group have played once)
         all_groups = set("ABCDEFGHIJKL")
         groups_with_j1 = {
-            letter for letter in j1_total
-            if j1_finished.get(letter, 0) >= 1
+            letter for letter, total in j1_total.items()
+            if total > 0 and j1_finished.get(letter, 0) >= total
         }
         if all_groups == groups_with_j1:
             results["jornada_1_complete"] = True
