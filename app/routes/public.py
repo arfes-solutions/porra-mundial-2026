@@ -661,22 +661,6 @@ HTML_TEMPLATE = """
 
         {% if vista == 'inicio' %}
 
-        {# ── BANNER EN VIVO (solo mobile, en desktop va en navbar) ── #}
-        {% if live_matches %}
-        <div class="mx-auto mb-3 d-md-none" style="max-width:1200px;">
-            {% for m in live_matches %}
-            <div class="alert mb-2 py-2 px-3 d-flex align-items-center justify-content-between flex-wrap gap-2"
-                 style="background:#0f5132;color:white;border-radius:12px;border:none;">
-                <span class="badge bg-danger">🔴 EN VIVO</span>
-                <span class="fw-bold">
-                    {% if m.home.flag %}<img src="https://flagcdn.com/w20/{{ m.home.flag }}.png" width="18" class="me-1">{% endif %}
-                    {{ m.home.name }} <span class="text-warning mx-2">{{ m.home_score if m.home_score is not none else '-' }}-{{ m.away_score if m.away_score is not none else '-' }}</span> {{ m.away.name }}
-                    {% if m.away.flag %}<img src="https://flagcdn.com/w20/{{ m.away.flag }}.png" width="18" class="ms-1">{% endif %}
-                </span>
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
 
         <div class="card p-2 p-md-4 mx-auto" style="max-width: 1200px;">
             <div class="card-body">
@@ -737,25 +721,6 @@ HTML_TEMPLATE = """
         // ── Auto-refresh cada 2 minutos ──────────────────────────────
         setTimeout(function(){ location.reload(); }, 120000);
 
-        // ── Cuenta atrás próximo partido ───────────────────────────────
-        {% if next_match and not live_matches %}
-        (function(){
-            var target = new Date("{{ next_match.utc_date }}");
-            function tick(){
-                var diff = target - new Date();
-                var el = document.getElementById('countdown-nav');
-                if(!el) return;
-                if(diff <= 0){ el.textContent = '¡Ya!'; return; }
-                var h = Math.floor(diff/3600000);
-                var m = Math.floor((diff%3600000)/60000);
-                var s = Math.floor((diff%60000)/1000);
-                el.textContent = (h>0 ? String(h).padStart(2,'0')+':' : '') +
-                    String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-                setTimeout(tick, 1000);
-            }
-            tick();
-        })();
-        {% endif %}
 
         // ── Animación de puntos (compara con localStorage) ─────────────
         (function(){
