@@ -290,7 +290,7 @@ def fetch_all(api_key: str) -> dict:
     # ── 3. TOP SCORERS ──────────────────────────────────────────────────
     try:
         r = _check(_req.get(
-            f"{_BASE}/competitions/{_COMPETITION}/scorers?limit=15",
+            f"{_BASE}/competitions/{_COMPETITION}/scorers?limit=9",
             headers=_headers(api_key),
             timeout=15,
         ))

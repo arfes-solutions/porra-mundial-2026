@@ -1003,9 +1003,9 @@ HTML_TEMPLATE = """
 
         {# ── TOP GOLEADORES ── #}
         {% if top_scorers %}
-        {% set col1 = top_scorers[0:5] %}
-        {% set col2 = top_scorers[5:10] %}
-        {% set col3 = top_scorers[10:15] %}
+        {% set col1 = top_scorers[0:3] %}
+        {% set col2 = top_scorers[3:6] %}
+        {% set col3 = top_scorers[6:9] %}
         {% macro scorer_table(scorers, offset) %}
         <table style="width:100%;border-collapse:collapse;font-size:.82rem;">
             <thead><tr style="background:rgba(0,0,0,0.04);">
@@ -1035,8 +1035,8 @@ HTML_TEMPLATE = """
                 <div class="card-body p-0">
                     <div class="row g-0">
                         <div class="col-12 col-md-4" style="border-right:1px solid #e9ecef;">{{ scorer_table(col1, 0) }}</div>
-                        <div class="col-12 col-md-4" style="border-right:1px solid #e9ecef;">{{ scorer_table(col2, 5) }}</div>
-                        <div class="col-12 col-md-4">{{ scorer_table(col3, 10) }}</div>
+                        <div class="col-12 col-md-4" style="border-right:1px solid #e9ecef;">{{ scorer_table(col2, 3) }}</div>
+                        <div class="col-12 col-md-4">{{ scorer_table(col3, 6) }}</div>
                     </div>
                 </div>
             </div>
