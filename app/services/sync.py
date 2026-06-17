@@ -262,10 +262,28 @@ def fetch_all(api_key: str) -> dict:
             letter = raw_group.replace("GROUP_", "").replace("Group ", "").strip()
             if not letter or len(letter) != 1:
                 continue
+            group_standings = []
             for idx, row in enumerate(standing.get("table", []), start=1):
                 name = _norm(row.get("team", {}).get("name", ""))
-                if name and idx <= 3:
+                if not name:
+                    continue
+                if idx <= 3:
                     results[f"g_{letter.lower()}_{idx}"] = name
+                group_standings.append({
+                    "pos":    idx,
+                    "name":   name,
+                    "flag":   _flag(name),
+                    "played": row.get("playedGames", 0),
+                    "won":    row.get("won", 0),
+                    "draw":   row.get("draw", 0),
+                    "lost":   row.get("lost", 0),
+                    "gf":     row.get("goalsFor", 0),
+                    "ga":     row.get("goalsAgainst", 0),
+                    "gd":     row.get("goalDifference", 0),
+                    "pts":    row.get("points", 0),
+                })
+            if group_standings:
+                results[f"g_{letter.lower()}_standings"] = group_standings
     except Exception:
         pass   # standings failure is non-fatal
 

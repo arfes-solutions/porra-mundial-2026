@@ -932,30 +932,66 @@ HTML_TEMPLATE = """
 
         {% elif vista == 'ver_grupos' %}
         <div class="card p-3 p-md-4 mx-auto mb-4 bg-transparent border-0 shadow-none" style="max-width: 1400px;">
-            <div class="d-flex justify-content-between align-items-center border-bottom border-success pb-3 mb-4">
-                <h3 class="m-0 fw-bold text-success">Clasificación de Grupos en Directo</h3>
-                
+            <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4" style="border-color:rgba(255,255,255,0.2)!important;">
+                <h3 class="m-0 fw-bold" style="color:rgba(255,255,255,0.95);">Clasificación de Grupos en Directo</h3>
             </div>
-            <div class="row">
-                {% for letra, equipos_ordenados in grupos_ordenados.items() %}
-                <div class="col-md-6 col-lg-3 mb-4">
-                    <div class="card h-100 shadow-sm border-0 bg-light">
-                        <div class="card-header bg-success text-white fw-bold text-center py-2">Grupo {{ letra }}</div>
-                        <div class="card-body p-2">
-                            <div class="d-flex flex-column gap-2">
-                                {% for iso, pais, puesto in equipos_ordenados %}
-                                <div class="bg-white border rounded px-2 py-2 shadow-sm d-flex align-items-center justify-content-between">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <img src="https://flagcdn.com/w20/{{ iso }}.png" width="20" alt="{{ pais }}">
-                                        <span class="fw-semibold text-dark small">{{ pais }}</span>
-                                    </div>
-                                    {% if puesto == '1º' %}<span class="badge bg-success shadow-sm">{{ puesto }}</span>
-                                    {% elif puesto == '2º' %}<span class="badge bg-primary shadow-sm">{{ puesto }}</span>
-                                    {% elif puesto == '3º' %}<span class="badge bg-warning text-dark shadow-sm">{{ puesto }}</span>
-                                    {% else %}<span class="badge bg-secondary opacity-25">-</span>{% endif %}
-                                </div>
-                                {% endfor %}
-                            </div>
+            <style>
+                .grupo-table { width:100%; border-collapse:collapse; font-size:.78rem; }
+                .grupo-table th { background:#1a6b36; color:white; padding:5px 4px; text-align:center; font-weight:600; }
+                .grupo-table th.left { text-align:left; }
+                .grupo-table td { padding:5px 4px; border-bottom:1px solid rgba(0,0,0,0.06); text-align:center; color:#1a1a2e; }
+                .grupo-table td.left { text-align:left; }
+                .grupo-table tr:last-child td { border-bottom:none; }
+                .grupo-table tr:nth-child(1) td, .grupo-table tr:nth-child(2) td { background:rgba(25,135,84,0.08); }
+                .grupo-table tr:nth-child(3) td { background:rgba(255,193,7,0.08); }
+                .pos-badge { display:inline-block; width:18px; height:18px; border-radius:50%; font-size:.65rem; font-weight:700; line-height:18px; text-align:center; }
+            </style>
+            <div class="row g-3">
+                {% for letra, tabla in grupos_standings.items() %}
+                <div class="col-md-6 col-xl-4 col-xxl-3">
+                    <div class="card shadow border-0" style="background:rgba(255,255,255,0.95);border-radius:12px;overflow:hidden;">
+                        <div class="card-header fw-bold text-center py-2" style="background:#1a6b36;color:white;letter-spacing:.5px;">Grupo {{ letra }}</div>
+                        <div class="card-body p-0">
+                            <table class="grupo-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:22px">#</th>
+                                        <th class="left">Equipo</th>
+                                        <th title="Partidos jugados">PJ</th>
+                                        <th title="Ganados">G</th>
+                                        <th title="Empates">E</th>
+                                        <th title="Perdidos">P</th>
+                                        <th title="Goles a favor">GF</th>
+                                        <th title="Goles en contra">GC</th>
+                                        <th title="Diferencia de goles">DG</th>
+                                        <th title="Puntos"><strong>Pts</strong></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for eq in tabla %}
+                                    <tr>
+                                        <td>
+                                            {% if eq.pos == 1 %}<span class="pos-badge bg-success text-white">1</span>
+                                            {% elif eq.pos == 2 %}<span class="pos-badge bg-primary text-white">2</span>
+                                            {% elif eq.pos == 3 %}<span class="pos-badge bg-warning text-dark">3</span>
+                                            {% else %}<span class="pos-badge bg-light text-muted border">{{ eq.pos }}</span>{% endif %}
+                                        </td>
+                                        <td class="left">
+                                            <img src="https://flagcdn.com/w20/{{ eq.iso }}.png" width="16" class="me-1">
+                                            <span class="fw-semibold">{{ eq.name }}</span>
+                                        </td>
+                                        <td>{{ eq.played }}</td>
+                                        <td>{{ eq.won }}</td>
+                                        <td>{{ eq.draw }}</td>
+                                        <td>{{ eq.lost }}</td>
+                                        <td>{{ eq.gf }}</td>
+                                        <td>{{ eq.ga }}</td>
+                                        <td>{{ eq.gd }}</td>
+                                        <td><strong>{{ eq.pts }}</strong></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -2511,23 +2547,29 @@ def ver_grupos():
 
     # Group stage view
     grupos_fmt = _grupos_fmt()
-    grupos_ordenados = {}
+    grupos_standings = {}
     for letra, equipos in grupos_fmt.items():
         letra_min = letra.lower()
-        r1 = results.get(f"g_{letra_min}_1", "")
-        r2 = results.get(f"g_{letra_min}_2", "")
-        r3 = results.get(f"g_{letra_min}_3", "")
+        api_standings = results.get(f"g_{letra_min}_standings")
         equipos_dict = {pais: iso for iso, pais in equipos}
-        ordenados = []
-        if r1 in equipos_dict: ordenados.append((equipos_dict[r1], r1, "1º"))
-        if r2 in equipos_dict: ordenados.append((equipos_dict[r2], r2, "2º"))
-        if r3 in equipos_dict: ordenados.append((equipos_dict[r3], r3, "3º"))
-        puestos = [e[1] for e in ordenados]
-        for iso, pais in equipos:
-            if pais not in puestos:
-                ordenados.append((iso, pais, "-"))
-        grupos_ordenados[letra] = ordenados
-    return _render("ver_grupos", grupos_ordenados=grupos_ordenados)
+        if api_standings:
+            tabla = []
+            for row in api_standings:
+                iso = equipos_dict.get(row["name"], row.get("flag", ""))
+                tabla.append({**row, "iso": iso})
+            names_in = {r["name"] for r in api_standings}
+            for iso, pais in equipos:
+                if pais not in names_in:
+                    tabla.append({"pos": len(tabla)+1, "name": pais, "flag": iso, "iso": iso,
+                                  "played": 0, "won": 0, "draw": 0, "lost": 0,
+                                  "gf": 0, "ga": 0, "gd": 0, "pts": 0})
+        else:
+            tabla = [{"pos": i+1, "name": pais, "flag": iso, "iso": iso,
+                      "played": 0, "won": 0, "draw": 0, "lost": 0,
+                      "gf": 0, "ga": 0, "gd": 0, "pts": 0}
+                     for i, (iso, pais) in enumerate(equipos)]
+        grupos_standings[letra] = tabla
+    return _render("ver_grupos", grupos_standings=grupos_standings)
 
 
 @public_bp.route("/horarios")
