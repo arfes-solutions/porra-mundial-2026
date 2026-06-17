@@ -1003,30 +1003,33 @@ HTML_TEMPLATE = """
 
         {# ── TOP GOLEADORES ── #}
         {% if top_scorers %}
-        <div class="mx-auto mb-4" style="max-width:1400px;">
+        <div class="mx-auto mb-4" style="max-width:500px;">
             <div class="card shadow border-0" style="background:rgba(255,255,255,0.95);border-radius:12px;overflow:hidden;">
                 <div class="card-header fw-bold text-center py-2" style="background:#1a6b36;color:white;letter-spacing:.5px;">⚽ Top Goleadores</div>
-                <div class="card-body p-3">
-                    <div class="row g-2">
-                        {% for s in top_scorers[:9] %}
-                        {% if loop.index == 1 %}{% set bg = "rgba(255,215,0,0.18)" %}{% set border = "rgba(255,215,0,0.5)" %}{% set num_color = "#b8860b" %}
-                        {% elif loop.index == 2 %}{% set bg = "rgba(192,192,192,0.18)" %}{% set border = "rgba(180,180,180,0.5)" %}{% set num_color = "#6c6c6c" %}
-                        {% elif loop.index == 3 %}{% set bg = "rgba(205,127,50,0.18)" %}{% set border = "rgba(205,127,50,0.5)" %}{% set num_color = "#a0522d" %}
-                        {% else %}{% set bg = "white" %}{% set border = "#e9ecef" %}{% set num_color = "#198754" %}
-                        {% endif %}
-                        <div class="col-4">
-                            <div class="d-flex align-items-center gap-2 p-2 rounded" style="background:{{ bg }};border:1px solid {{ border }};">
-                                <span style="font-size:1rem;font-weight:800;color:{{ num_color }};min-width:20px;text-align:center;">{{ loop.index }}</span>
-                                {% if s.flag %}<img src="https://flagcdn.com/w20/{{ s.flag }}.png" width="18">{% endif %}
-                                <div style="min-width:0;">
-                                    <div style="font-weight:600;font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ s.name }}</div>
-                                    <div style="font-size:.72rem;color:#6c757d;">{{ s.team }}</div>
-                                </div>
-                                <span style="margin-left:auto;font-weight:700;font-size:1rem;white-space:nowrap;">{{ s.goals }} ⚽</span>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
+                <div class="card-body p-0">
+                    <table style="width:100%;border-collapse:collapse;font-size:.82rem;">
+                        <thead>
+                            <tr style="background:rgba(0,0,0,0.04);">
+                                <th style="padding:6px 10px;text-align:center;width:28px;">#</th>
+                                <th style="padding:6px 10px;text-align:left;">Jugador</th>
+                                <th style="padding:6px 10px;text-align:center;">Equipo</th>
+                                <th style="padding:6px 10px;text-align:center;">⚽</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for s in top_scorers[:5] %}
+                            <tr style="border-top:1px solid #e9ecef;">
+                                <td style="padding:7px 10px;text-align:center;font-weight:700;color:#198754;">{{ loop.index }}</td>
+                                <td style="padding:7px 10px;font-weight:600;">{{ s.name }}</td>
+                                <td style="padding:7px 10px;text-align:center;">
+                                    {% if s.flag %}<img src="https://flagcdn.com/w20/{{ s.flag }}.png" width="16" class="me-1">{% endif %}
+                                    <span style="font-size:.75rem;color:#6c757d;">{{ s.team }}</span>
+                                </td>
+                                <td style="padding:7px 10px;text-align:center;font-weight:700;font-size:1rem;">{{ s.goals }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
