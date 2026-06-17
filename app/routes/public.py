@@ -577,7 +577,7 @@ HTML_TEMPLATE = """
             background: rgba(255,255,255,0.20) !important;
             color: #fff !important;
         }
-        /* Botones de nav (Inicio, Reglas, Grupos, Horarios) — mantener estilo */
+        /* Botones de nav (Inicio, Reglas, Grupos, Resultados) — mantener estilo */
         body:not(.login-page) .header-banner .btn-light {
             background: rgba(255,255,255,0.92) !important;
             color: #0f5132 !important;
@@ -622,7 +622,7 @@ HTML_TEMPLATE = """
                 <div class="d-flex align-items-center gap-2 justify-content-end">
                     {% if authenticated %}
                     <a href="{{ url_for('public.ver_grupos') }}" class="btn btn-light text-success fw-bold px-3">Grupos</a>
-                    <a href="{{ url_for('public.ver_horarios') }}" class="btn btn-light text-success fw-bold px-3">Horarios</a>
+                    <a href="{{ url_for('public.ver_horarios') }}" class="btn btn-light text-success fw-bold px-3">Resultados</a>
                     {% endif %}
                 </div>
             </div>
@@ -648,7 +648,7 @@ HTML_TEMPLATE = """
                         <a href="{{ url_for('public.welcome') }}" class="btn btn-light text-success fw-bold px-3">Inicio</a>
                         <button type="button" class="btn btn-light text-success fw-bold px-3" data-bs-toggle="modal" data-bs-target="#modalReglas">Reglas</button>
                         <a href="{{ url_for('public.ver_grupos') }}" class="btn btn-light text-success fw-bold px-3">Grupos</a>
-                        <a href="{{ url_for('public.ver_horarios') }}" class="btn btn-light text-success fw-bold px-3">Horarios</a>
+                        <a href="{{ url_for('public.ver_horarios') }}" class="btn btn-light text-success fw-bold px-3">Resultados</a>
                     </div>
                 </div>
             </div>
@@ -1000,6 +1000,41 @@ HTML_TEMPLATE = """
         </div>
 
         {% elif vista == 'ver_horarios_dinamico' %}
+
+        {# ── TOP GOLEADORES ── #}
+        {% if top_scorers %}
+        <div class="mx-auto mb-4" style="max-width:500px;">
+            <div class="card shadow border-0" style="background:rgba(255,255,255,0.95);border-radius:12px;overflow:hidden;">
+                <div class="card-header fw-bold text-center py-2" style="background:#1a6b36;color:white;letter-spacing:.5px;">⚽ Top Goleadores</div>
+                <div class="card-body p-0">
+                    <table style="width:100%;border-collapse:collapse;font-size:.82rem;">
+                        <thead>
+                            <tr style="background:#f8f9fa;">
+                                <th style="padding:6px 10px;text-align:center;width:28px;">#</th>
+                                <th style="padding:6px 10px;text-align:left;">Jugador</th>
+                                <th style="padding:6px 10px;text-align:center;">Equipo</th>
+                                <th style="padding:6px 10px;text-align:center;" title="Goles">⚽</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for s in top_scorers[:5] %}
+                            <tr style="border-top:1px solid #e9ecef;">
+                                <td style="padding:7px 10px;text-align:center;font-weight:700;color:#198754;">{{ loop.index }}</td>
+                                <td style="padding:7px 10px;font-weight:600;">{{ s.name }}</td>
+                                <td style="padding:7px 10px;text-align:center;">
+                                    {% if s.flag %}<img src="https://flagcdn.com/w20/{{ s.flag }}.png" width="16" class="me-1">{% endif %}
+                                    <span class="text-muted small">{{ s.team }}</span>
+                                </td>
+                                <td style="padding:7px 10px;text-align:center;font-weight:700;font-size:1rem;">{{ s.goals }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
         <div class="card p-3 p-md-4 mx-auto mb-4 bg-transparent border-0 shadow-none" style="max-width: 1400px;">
             <div class="d-flex justify-content-between align-items-center border-bottom border-success pb-3 mb-4">
                 <h3 class="m-0 fw-bold text-success">📅 Partidos del Mundial (Hora Peninsular)</h3>
@@ -1053,7 +1088,7 @@ HTML_TEMPLATE = """
         {% elif vista == 'ver_horarios' %}
         <div class="card p-3 p-md-4 mx-auto mb-4 bg-transparent border-0 shadow-none" style="max-width: 1400px;">
             <div class="d-flex justify-content-between align-items-center border-bottom border-success pb-3 mb-4">
-                <h3 class="m-0 fw-bold text-success">📅 Horarios del Mundial (Hora Peninsular)</h3>
+                <h3 class="m-0 fw-bold text-success">📅 Resultados del Mundial (Hora Peninsular)</h3>
                 
             </div>
             <div class="row">
@@ -2613,7 +2648,12 @@ def ver_horarios():
                 sections[sec_key] = {"label": label, "partidos": []}
             sections[sec_key]["partidos"].append(f)
 
-        return _render("ver_horarios_dinamico", sections=sections)
+        top_scorers = []
+        try:
+            top_scorers = get_storage().load_results().get("top_scorers", [])
+        except Exception:
+            pass
+        return _render("ver_horarios_dinamico", sections=sections, top_scorers=top_scorers)
 
     # Fallback to hardcoded calendar
     return _render("ver_horarios", calendario=_generar_calendario())

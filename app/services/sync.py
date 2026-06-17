@@ -287,6 +287,29 @@ def fetch_all(api_key: str) -> dict:
     except Exception:
         pass   # standings failure is non-fatal
 
+    # ── 3. TOP SCORERS ──────────────────────────────────────────────────
+    try:
+        r = _check(_req.get(
+            f"{_BASE}/competitions/{_COMPETITION}/scorers?limit=10",
+            headers=_headers(api_key),
+            timeout=15,
+        ))
+        scorers = []
+        for s in r.json().get("scorers", []):
+            player = s.get("player", {})
+            team   = s.get("team", {})
+            scorers.append({
+                "name":   player.get("name", "?"),
+                "team":   _norm(team.get("name", "?")),
+                "flag":   _flag(_norm(team.get("name", "?"))),
+                "goals":  s.get("goals") or 0,
+                "assists": s.get("assists") or 0,
+            })
+        if scorers:
+            results["top_scorers"] = scorers
+    except Exception:
+        pass   # scorers failure is non-fatal
+
     return {"results": results, "fixtures": fixtures}
 
 
