@@ -1003,33 +1003,41 @@ HTML_TEMPLATE = """
 
         {# ── TOP GOLEADORES ── #}
         {% if top_scorers %}
-        <div class="mx-auto mb-4" style="max-width:500px;">
+        {% set col1 = top_scorers[0:5] %}
+        {% set col2 = top_scorers[5:10] %}
+        {% set col3 = top_scorers[10:15] %}
+        {% macro scorer_table(scorers, offset) %}
+        <table style="width:100%;border-collapse:collapse;font-size:.82rem;">
+            <thead><tr style="background:rgba(0,0,0,0.04);">
+                <th style="padding:5px 8px;text-align:center;width:24px;">#</th>
+                <th style="padding:5px 8px;text-align:left;">Jugador</th>
+                <th style="padding:5px 8px;text-align:center;">Equipo</th>
+                <th style="padding:5px 8px;text-align:center;">⚽</th>
+            </tr></thead>
+            <tbody>
+            {% for s in scorers %}
+            <tr style="border-top:1px solid #e9ecef;">
+                <td style="padding:6px 8px;text-align:center;font-weight:700;color:#198754;">{{ loop.index + offset }}</td>
+                <td style="padding:6px 8px;font-weight:600;">{{ s.name }}</td>
+                <td style="padding:6px 8px;text-align:center;">
+                    {% if s.flag %}<img src="https://flagcdn.com/w20/{{ s.flag }}.png" width="15" class="me-1">{% endif %}
+                    <span style="font-size:.75rem;color:#6c757d;">{{ s.team }}</span>
+                </td>
+                <td style="padding:6px 8px;text-align:center;font-weight:700;font-size:.95rem;">{{ s.goals }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% endmacro %}
+        <div class="mx-auto mb-4" style="max-width:1400px;">
             <div class="card shadow border-0" style="background:rgba(255,255,255,0.95);border-radius:12px;overflow:hidden;">
                 <div class="card-header fw-bold text-center py-2" style="background:#1a6b36;color:white;letter-spacing:.5px;">⚽ Top Goleadores</div>
                 <div class="card-body p-0">
-                    <table style="width:100%;border-collapse:collapse;font-size:.82rem;">
-                        <thead>
-                            <tr style="background:#f8f9fa;">
-                                <th style="padding:6px 10px;text-align:center;width:28px;">#</th>
-                                <th style="padding:6px 10px;text-align:left;">Jugador</th>
-                                <th style="padding:6px 10px;text-align:center;">Equipo</th>
-                                <th style="padding:6px 10px;text-align:center;" title="Goles">⚽</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for s in top_scorers[:5] %}
-                            <tr style="border-top:1px solid #e9ecef;">
-                                <td style="padding:7px 10px;text-align:center;font-weight:700;color:#198754;">{{ loop.index }}</td>
-                                <td style="padding:7px 10px;font-weight:600;">{{ s.name }}</td>
-                                <td style="padding:7px 10px;text-align:center;">
-                                    {% if s.flag %}<img src="https://flagcdn.com/w20/{{ s.flag }}.png" width="16" class="me-1">{% endif %}
-                                    <span class="text-muted small">{{ s.team }}</span>
-                                </td>
-                                <td style="padding:7px 10px;text-align:center;font-weight:700;font-size:1rem;">{{ s.goals }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                    <div class="row g-0">
+                        <div class="col-12 col-md-4" style="border-right:1px solid #e9ecef;">{{ scorer_table(col1, 0) }}</div>
+                        <div class="col-12 col-md-4" style="border-right:1px solid #e9ecef;">{{ scorer_table(col2, 5) }}</div>
+                        <div class="col-12 col-md-4">{{ scorer_table(col3, 10) }}</div>
+                    </div>
                 </div>
             </div>
         </div>
