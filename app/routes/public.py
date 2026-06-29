@@ -10,6 +10,16 @@ from app.storage import get_storage
 public_bp = Blueprint("public", __name__)
 
 
+@public_bp.before_request
+def _auto_login():
+    # The login screen was removed: everyone is treated as already
+    # authenticated as the shared user. Real admin login (via /entrar with
+    # the admin credentials) still works and is preserved.
+    if not session.get("authenticated"):
+        session["authenticated"] = True
+        session.setdefault("is_admin", False)
+
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -687,17 +697,15 @@ HTML_TEMPLATE = """
                         <tbody>
                             {% for jug in clasificacion %}
                             <tr>
-                                <td class="fw-bold fs-5">
+                                <td class="fw-bold fs-5" data-rank="{{ loop.index }}" data-name="{{ jug.name }}">
                                     {% if loop.index == 1 %}🥇
                                     {% elif loop.index == 2 %}🥈
                                     {% elif loop.index == 3 %}🥉
                                     {% else %}{{ loop.index }}º{% endif %}
+                                    <span class="rank-change d-none small fw-bold ms-1"></span>
                                 </td>
                                 <td class="fw-bold fs-5">{{ jug.name }}</td>
-                                <td class="text-center fw-bold fs-4 puntos-oro" data-pts="{{ jug.points }}" data-name="{{ jug.name }}">
-                                    {{ jug.points }} pts
-                                    <span class="pts-delta d-none fw-bold text-success small"></span>
-                                </td>
+                                <td class="text-center fw-bold fs-4 puntos-oro">{{ jug.points }} pts</td>
                                 <td class="text-end">
                                     <a href="{{ url_for('public.ver_prediccion', participant_id=jug.id) }}" class="btn btn-sm btn-outline-custom px-3">Ver predicción</a>
                                 </td>
@@ -714,7 +722,7 @@ HTML_TEMPLATE = """
         <style>
             @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
             @keyframes popUp { 0%{opacity:0;transform:translateY(-8px) scale(.8)} 60%{transform:translateY(2px) scale(1.1)} 100%{opacity:1;transform:none} }
-            .pts-delta { animation: popUp .5s ease forwards; font-size:1rem; margin-left:6px; }
+            .rank-change { animation: popUp .5s ease forwards; }
         </style>
 
         <script>
@@ -722,22 +730,28 @@ HTML_TEMPLATE = """
         setTimeout(function(){ location.reload(); }, 120000);
 
 
-        // ── Animación de puntos (compara con localStorage) ─────────────
+        // ── Flechas de cambio de posición (compara con localStorage) ───
         (function(){
             var stored = {};
-            try { stored = JSON.parse(localStorage.getItem('porra_pts') || '{}'); } catch(e){}
+            try { stored = JSON.parse(localStorage.getItem('porra_ranks') || '{}'); } catch(e){}
             var current = {};
-            document.querySelectorAll('[data-pts]').forEach(function(el){
+            document.querySelectorAll('[data-rank]').forEach(function(el){
                 var name = el.dataset.name;
-                var pts  = parseInt(el.dataset.pts);
-                current[name] = pts;
-                if(stored[name] !== undefined && pts > stored[name]){
-                    var delta = el.querySelector('.pts-delta');
-                    delta.textContent = '+' + (pts - stored[name]);
-                    delta.classList.remove('d-none');
+                var rank = parseInt(el.dataset.rank);
+                current[name] = rank;
+                if(stored[name] !== undefined && stored[name] !== rank){
+                    var diff = stored[name] - rank; // positivo = ha subido posiciones
+                    var span = el.querySelector('.rank-change');
+                    if(diff > 0){
+                        span.textContent = '▲' + diff;
+                        span.className = 'rank-change small fw-bold text-success ms-1';
+                    } else {
+                        span.textContent = '▼' + Math.abs(diff);
+                        span.className = 'rank-change small fw-bold text-danger ms-1';
+                    }
                 }
             });
-            localStorage.setItem('porra_pts', JSON.stringify(current));
+            localStorage.setItem('porra_ranks', JSON.stringify(current));
         })();
         </script>
 
