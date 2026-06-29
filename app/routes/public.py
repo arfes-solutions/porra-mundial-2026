@@ -1235,9 +1235,9 @@ HTML_TEMPLATE = """
                     </div>
                     <div class="col-md-4">
                         <h6 class="text-primary fw-bold mb-2">⚽ PICHICHI</h6>
-                        {% set cp = 'text-success' if (pred_pich and pred_pich.lower() == real_pich.lower()) else ('text-danger' if real_pich else 'text-dark') %}
+                        {% set cp = 'text-success' if pichichi_acertado else ('text-danger' if real_pich else 'text-dark') %}
                         <h4 class="fw-bold {{ cp }} m-0">{{ pred_pich or '-' }}
-                            {% if pred_pich and real_pich %}{% if pred_pich.lower() == real_pich.lower() %} ✅{% else %} ❌{% endif %}{% endif %}
+                            {% if pred_pich and real_pich %}{% if pichichi_acertado %} ✅{% else %} ❌{% endif %}{% endif %}
                         </h4>
                     </div>
                 </div>
@@ -2692,9 +2692,16 @@ def ver_prediccion(participant_id):
         return redirect(url_for("public.welcome"))
     if not p:
         return redirect(url_for("public.welcome"))
+    pred_pich = (p.get("prediction") or {}).get("eliminatorias", {}).get("pichichi") or ""
+    pich_norm = _normalize_name(pred_pich)
+    pichichi_acertado = bool(pich_norm) and any(
+        pich_norm == official or pich_norm in official.split()
+        for official in results.get("pichichi", [])
+    )
     return _render("ver_prediccion", nombre=p["name"],
                    predicciones=p.get("prediction") or {},
-                   resultados=results)
+                   resultados=results,
+                   pichichi_acertado=pichichi_acertado)
 
 
 @public_bp.route("/prediccion/grupos", methods=["GET", "POST"])
