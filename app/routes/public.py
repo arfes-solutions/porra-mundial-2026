@@ -1174,12 +1174,15 @@ HTML_TEMPLATE = """
                     {% for ronda, label in [('octavos','Octavos de Final'),('cuartos','Cuartos de Final'),('semis','Semifinales'),('final','La Final')] %}
                     {% set equipos_pred = predicciones.get('eliminatorias',{}).get(ronda, []) %}
                     {% set equipos_real = resultados.get(ronda, []) %}
+                    {% set ronda_completa = resultados.get(ronda ~ '_complete', false) %}
                     <div class="col-md-6">
                         <h6 class="bg-success text-white p-2 rounded text-center fw-bold">{{ label }}</h6>
                         <div class="d-flex flex-wrap justify-content-center gap-1">
                             {% for eq in equipos_pred %}
-                                {% if equipos_real %}
-                                    {% set cls = 'pred-ok' if eq in equipos_real else 'pred-fail' %}
+                                {% if eq in equipos_real %}
+                                    {% set cls = 'pred-ok' %}
+                                {% elif ronda_completa %}
+                                    {% set cls = 'pred-fail' %}
                                 {% else %}
                                     {% set cls = 'pred-none' %}
                                 {% endif %}

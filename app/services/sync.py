@@ -154,6 +154,13 @@ def fetch_all(api_key: str) -> dict:
         # Track jornada 1 completion per group (2 matches per group in matchday 1)
         j1_total    = {}  # letter -> total jornada-1 matches
         j1_finished = {}  # letter -> finished jornada-1 matches
+        # Teams that actually qualified to the round of 32 (top 2 of each group + 8 best thirds)
+        qualified_r32 = set()
+        # Track completion per knockout round (for display only — a round's predictions
+        # shouldn't be marked "failed" until every match in that round has been played)
+        round_total    = {}  # round_key -> total matches
+        round_finished = {}  # round_key -> finished matches
+        final_total = final_finished = 0
 
         for m in matches:
             stage      = m.get("stage", "")
@@ -195,6 +202,22 @@ def fetch_all(api_key: str) -> dict:
             if stage == "GROUP_STAGE" and group_letter and matchday == 1:
                 j1_total[group_letter]    = j1_total.get(group_letter, 0) + 1
                 j1_finished[group_letter] = j1_finished.get(group_letter, 0) + (1 if is_finished else 0)
+
+            # Round of 32 fixtures reveal exactly which teams qualified from groups
+            # (top 2 of each group + the 8 best third-placed teams)
+            if stage in ("ROUND_OF_32", "LAST_32"):
+                if home_name and home_name != "?":
+                    qualified_r32.add(home_name)
+                if away_name and away_name != "?":
+                    qualified_r32.add(away_name)
+
+            # Track knockout round completion
+            if stage == "FINAL":
+                final_total += 1
+                final_finished += 1 if is_finished else 0
+            elif round_key:
+                round_total[round_key]    = round_total.get(round_key, 0) + 1
+                round_finished[round_key] = round_finished.get(round_key, 0) + (1 if is_finished else 0)
 
             # Build fixture entry
             fixture = {
@@ -244,6 +267,16 @@ def fetch_all(api_key: str) -> dict:
         }
         if all_groups == groups_with_j1:
             results["jornada_1_complete"] = True
+
+        if qualified_r32:
+            results["qualified_r32"] = sorted(qualified_r32)
+
+        # Knockout round completion flags (display only)
+        for ronda, total in round_total.items():
+            if total > 0 and round_finished.get(ronda, 0) >= total:
+                results[f"{ronda}_complete"] = True
+        if final_total > 0 and final_finished >= final_total:
+            results["final_complete"] = True
 
     except Exception as exc:
         raise RuntimeError(f"Error fetching matches: {exc}")

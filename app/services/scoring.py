@@ -19,25 +19,33 @@ def calculate_points(prediction, results):
     points = 0
     group_predictions = prediction.get("grupos", {})
     knockout_predictions = prediction.get("eliminatorias", {})
+    # Teams that actually qualified to the round of 32 (only known once those
+    # fixtures are published by the API). A 3rd-place finish does NOT guarantee
+    # qualification (only the 8 best thirds advance), so we require explicit
+    # confirmation before crediting a "best third" prediction.
+    qualified_r32 = set(results.get("qualified_r32", []))
 
     for letter in "ABCDEFGHIJKL":
-        actual_positions = [
-            results.get(f"g_{letter.lower()}_1"),
-            results.get(f"g_{letter.lower()}_2"),
-            results.get(f"g_{letter.lower()}_3"),
-        ]
-        actual_qualified = {team for team in actual_positions if team}
+        g1 = results.get(f"g_{letter.lower()}_1")
+        g2 = results.get(f"g_{letter.lower()}_2")
+        g3 = results.get(f"g_{letter.lower()}_3")
+        # Only 1st and 2nd place are guaranteed to qualify
+        guaranteed_qualified = {team for team in (g1, g2) if team}
 
-        for position in ("1", "2", "3"):
+        for position, actual in (("1", g1), ("2", g2)):
             predicted = group_predictions.get(f"g_{letter}_{position}")
-            actual = results.get(f"g_{letter.lower()}_{position}")
-
             if not predicted:
                 continue
-            if predicted in actual_qualified:
+            if predicted in guaranteed_qualified:
                 points += GROUP_POINTS_ANY_POSITION
             if predicted == actual:
                 points += GROUP_POINTS_EXACT_POSITION
+
+        # "Best third" prediction: only counts once we know it actually
+        # qualified for the knockout stage
+        predicted_3 = group_predictions.get(f"g_{letter}_3")
+        if predicted_3 and predicted_3 == g3 and predicted_3 in qualified_r32:
+            points += GROUP_POINTS_ANY_POSITION + GROUP_POINTS_EXACT_POSITION
 
     for round_name, round_points in KNOCKOUT_POINTS.items():
         actual_teams = set(results.get(round_name, []))
