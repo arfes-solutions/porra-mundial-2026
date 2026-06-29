@@ -1141,6 +1141,7 @@ HTML_TEMPLATE = """
         {% elif vista == 'ver_prediccion' %}
         <style>
             .pred-ok  { background:#d4edda!important; color:#155724!important; border-color:#28a745!important; }
+            .pred-partial{ background:#fff3cd!important; color:#7a5c00!important; border-color:#ffc107!important; }
             .pred-fail{ background:#f8d7da!important; color:#721c24!important; border-color:#dc3545!important; }
             .pred-none{ background:#fff!important;    color:#333!important;    border-color:#ccc!important; }
         </style>
@@ -1148,7 +1149,7 @@ HTML_TEMPLATE = """
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
                     <h3 class="m-0 fw-bold text-success">Predicción de {{ nombre }}</h3>
-                    <small class="text-muted">🟢 Acertado &nbsp; 🔴 Fallado &nbsp; ⚪ Sin resultado aún</small>
+                    <small class="text-muted">🟢 Acertado &nbsp; 🟠 Pasó de ronda, orden distinto &nbsp; 🔴 Fallado &nbsp; ⚪ Sin resultado aún</small>
                 </div>
 
                 <h5 class="fw-bold text-secondary mb-3">Fase de Grupos</h5>
@@ -1167,11 +1168,11 @@ HTML_TEMPLATE = """
                                 <div class="card-header bg-success text-white text-center fw-bold py-2">Grupo {{ letra }}</div>
                                 <div class="card-body p-2 text-center small">
                                     {% if p1 %}
-                                    {% set c1 = 'pred-ok' if p1 in guaranteed else ('pred-fail' if guaranteed else 'pred-none') %}
+                                    {% set c1 = 'pred-ok' if p1 == r1 else ('pred-partial' if p1 in guaranteed else ('pred-fail' if guaranteed else 'pred-none')) %}
                                     <div class="fw-bold mb-1 rounded px-1 {{ c1 }}"><span class="me-1">1º</span>{{ p1 }}</div>
                                     {% endif %}
                                     {% if p2 %}
-                                    {% set c2 = 'pred-ok' if p2 in guaranteed else ('pred-fail' if guaranteed else 'pred-none') %}
+                                    {% set c2 = 'pred-ok' if p2 == r2 else ('pred-partial' if p2 in guaranteed else ('pred-fail' if guaranteed else 'pred-none')) %}
                                     <div class="fw-bold mb-1 rounded px-1 {{ c2 }}"><span class="me-1">2º</span>{{ p2 }}</div>
                                     {% endif %}
                                     {% if p3 %}
