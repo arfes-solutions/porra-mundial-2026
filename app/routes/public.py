@@ -1162,21 +1162,23 @@ HTML_TEMPLATE = """
                         {% set r2 = resultados.get('g_' ~ letra.lower() ~ '_2', '') %}
                         {% set r3 = resultados.get('g_' ~ letra.lower() ~ '_3', '') %}
                         {% set qualified_r32 = resultados.get('qualified_r32', []) %}
-                        {% set guaranteed = [r1, r2] | select | list %}
+                        {% set g3_qualifies = (r3 and r3 in qualified_r32) %}
+                        {% set qualified_set = [r1, r2] | select | list %}
+                        {% if g3_qualifies %}{% set qualified_set = qualified_set + [r3] %}{% endif %}
                         <div class="col-6 col-md-4 col-lg-3">
                             <div class="card shadow-sm h-100 border-0 bg-light">
                                 <div class="card-header bg-success text-white text-center fw-bold py-2">Grupo {{ letra }}</div>
                                 <div class="card-body p-2 text-center small">
                                     {% if p1 %}
-                                    {% set c1 = 'pred-ok' if p1 == r1 else ('pred-partial' if p1 in guaranteed else ('pred-fail' if guaranteed else 'pred-none')) %}
+                                    {% set c1 = 'pred-ok' if p1 == r1 else ('pred-partial' if p1 in qualified_set else ('pred-fail' if qualified_set or r1 else 'pred-none')) %}
                                     <div class="fw-bold mb-1 rounded px-1 {{ c1 }}"><span class="me-1">1º</span>{{ p1 }}</div>
                                     {% endif %}
                                     {% if p2 %}
-                                    {% set c2 = 'pred-ok' if p2 == r2 else ('pred-partial' if p2 in guaranteed else ('pred-fail' if guaranteed else 'pred-none')) %}
+                                    {% set c2 = 'pred-ok' if p2 == r2 else ('pred-partial' if p2 in qualified_set else ('pred-fail' if qualified_set or r2 else 'pred-none')) %}
                                     <div class="fw-bold mb-1 rounded px-1 {{ c2 }}"><span class="me-1">2º</span>{{ p2 }}</div>
                                     {% endif %}
                                     {% if p3 %}
-                                    {% set c3 = 'pred-ok' if (p3 == r3 and p3 in qualified_r32) else ('pred-fail' if r3 else 'pred-none') %}
+                                    {% set c3 = 'pred-ok' if (p3 == r3 and g3_qualifies) else ('pred-partial' if p3 in qualified_set else ('pred-fail' if r3 else 'pred-none')) %}
                                     <div class="fw-bold rounded px-1 {{ c3 }}"><span class="me-1">3º</span>{{ p3 }}</div>
                                     {% endif %}
                                 </div>

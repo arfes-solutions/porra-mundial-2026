@@ -41,23 +41,27 @@ def calculate_points(prediction, results):
         g1 = results.get(f"g_{letter.lower()}_1")
         g2 = results.get(f"g_{letter.lower()}_2")
         g3 = results.get(f"g_{letter.lower()}_3")
-        # Only 1st and 2nd place are guaranteed to qualify
-        guaranteed_qualified = {team for team in (g1, g2) if team}
+        g3_qualifies = bool(g3) and g3 in qualified_r32
 
-        for position, actual in (("1", g1), ("2", g2)):
+        # The set of teams that ACTUALLY qualified from this group: 1st, 2nd,
+        # and the 3rd-placed team only if it made the cut as one of the best
+        # thirds. A guess earns the "any position" point if the guessed team
+        # is anywhere in this set, no matter which slot it was predicted for.
+        qualified_set = {team for team in (g1, g2) if team}
+        if g3_qualifies:
+            qualified_set.add(g3)
+
+        for position, actual in (("1", g1), ("2", g2), ("3", g3)):
             predicted = group_predictions.get(f"g_{letter}_{position}")
             if not predicted:
                 continue
-            if predicted in guaranteed_qualified:
+            if predicted in qualified_set:
                 points += GROUP_POINTS_ANY_POSITION
-            if predicted == actual:
+            if position == "3":
+                if predicted == g3 and g3_qualifies:
+                    points += GROUP_POINTS_EXACT_POSITION
+            elif predicted == actual:
                 points += GROUP_POINTS_EXACT_POSITION
-
-        # "Best third" prediction: only counts once we know it actually
-        # qualified for the knockout stage
-        predicted_3 = group_predictions.get(f"g_{letter}_3")
-        if predicted_3 and predicted_3 == g3 and predicted_3 in qualified_r32:
-            points += GROUP_POINTS_ANY_POSITION + GROUP_POINTS_EXACT_POSITION
 
     for round_name, round_points in KNOCKOUT_POINTS.items():
         actual_teams = set(results.get(round_name, []))
