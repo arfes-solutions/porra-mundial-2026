@@ -1,3 +1,15 @@
+import unicodedata
+
+
+def _normalize_name(name) -> str:
+    """Lowercase + strip accents, so 'Mbappé', 'mbappe', 'MBAPPÉ' all match."""
+    if not name:
+        return ""
+    decomposed = unicodedata.normalize("NFKD", name)
+    no_accents = "".join(c for c in decomposed if not unicodedata.combining(c))
+    return no_accents.strip().lower()
+
+
 GROUP_POINTS_ANY_POSITION = 1
 GROUP_POINTS_EXACT_POSITION = 1
 KNOCKOUT_POINTS = {
@@ -61,7 +73,7 @@ def calculate_points(prediction, results):
     if runner_up and runner_up == results.get("subcampeon"):
         points += RUNNER_UP_POINTS
 
-    top_scorer = (knockout_predictions.get("pichichi") or "").strip().lower()
+    top_scorer = _normalize_name(knockout_predictions.get("pichichi"))
     if top_scorer and top_scorer in results.get("pichichi", []):
         points += TOP_SCORER_POINTS
 

@@ -3,7 +3,7 @@ from flask import Blueprint, redirect, render_template_string, request, session,
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from app.data.tournament import GROUPS, TEAMS
-from app.services.scoring import build_standings
+from app.services.scoring import build_standings, _normalize_name
 from app.storage import get_storage
 
 
@@ -2872,7 +2872,7 @@ def admin_panel():
                         results[field] = val
                 pichichi = request.form.get("pichichi", "").strip()
                 if pichichi:
-                    results["pichichi"] = [pichichi.lower()]
+                    results["pichichi"] = [_normalize_name(pichichi)]
                 get_storage().save_results(results)
                 msg, ok = "Resultados guardados correctamente.", True
             except Exception as exc:

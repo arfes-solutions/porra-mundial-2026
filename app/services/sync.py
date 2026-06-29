@@ -4,7 +4,17 @@ Fetches: match fixtures (all rounds), live scores, group standings, knockout res
 Docs: https://docs.football-data.org/general/v4/index.html
 """
 import datetime
+import unicodedata
 import requests as _req
+
+
+def _normalize_name(name) -> str:
+    """Lowercase + strip accents, so 'Mbappé', 'mbappe', 'MBAPPÉ' all match."""
+    if not name:
+        return ""
+    decomposed = unicodedata.normalize("NFKD", name)
+    no_accents = "".join(c for c in decomposed if not unicodedata.combining(c))
+    return no_accents.strip().lower()
 
 _BASE = "https://api.football-data.org/v4"
 _COMPETITION = "WC"
@@ -350,6 +360,14 @@ def fetch_all(api_key: str) -> dict:
             })
         if scorers:
             results["top_scorers"] = scorers
+            # Auto-derive the current top scorer(s) from the API so participant
+            # guesses are compared against real data instead of manual entry.
+            # If several players are tied on max goals, all of them count.
+            max_goals = max(s["goals"] for s in scorers)
+            if max_goals > 0:
+                results["pichichi"] = [
+                    _normalize_name(s["name"]) for s in scorers if s["goals"] == max_goals
+                ]
     except Exception:
         pass   # scorers failure is non-fatal
 
