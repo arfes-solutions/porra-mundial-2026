@@ -74,8 +74,14 @@ def calculate_points(prediction, results):
         points += RUNNER_UP_POINTS
 
     top_scorer = _normalize_name(knockout_predictions.get("pichichi"))
-    if top_scorer and top_scorer in results.get("pichichi", []):
-        points += TOP_SCORER_POINTS
+    if top_scorer:
+        for official in results.get("pichichi", []):
+            # Participants often type just the surname ("Messi") while the
+            # official name from the API is the full name ("Lionel Messi"):
+            # match on exact string or as one of the whole words.
+            if top_scorer == official or top_scorer in official.split():
+                points += TOP_SCORER_POINTS
+                break
 
     return points
 
