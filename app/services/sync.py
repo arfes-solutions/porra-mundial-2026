@@ -191,6 +191,16 @@ def fetch_all(api_key: str) -> dict:
                 except Exception:
                     pass
 
+            # The API's "winner" field is sometimes missing/null even for finished
+            # matches with a clear scoreline — fall back to comparing the score.
+            if status in _STATUS_FINISHED and not winner_key and home_score is not None and away_score is not None:
+                if home_score > away_score:
+                    winner_key = "HOME_TEAM"
+                elif away_score > home_score:
+                    winner_key = "AWAY_TEAM"
+                else:
+                    winner_key = "DRAW"
+
             fecha, hora = _utc_to_peninsular(utc_date)
             label, round_key = _STAGE_LABELS.get(stage, (stage, None))
             group_letter = group_raw.replace("GROUP_", "") if group_raw.startswith("GROUP_") else ""
