@@ -61,7 +61,7 @@ def calculate_points(prediction, results):
     if runner_up and runner_up == results.get("subcampeon"):
         points += RUNNER_UP_POINTS
 
-    top_scorer = knockout_predictions.get("pichichi", "").strip().lower()
+    top_scorer = (knockout_predictions.get("pichichi") or "").strip().lower()
     if top_scorer and top_scorer in results.get("pichichi", []):
         points += TOP_SCORER_POINTS
 
